@@ -48,7 +48,9 @@ function guardRoute(param) {
       univentStore.loginModal = true
     }
   }
-  activeNav.value = param
+  if (univentStore.isAuthenticated) {
+    activeNav.value = param
+  }
 }
 
 onMounted(async () => {
