@@ -1,0 +1,364 @@
+<script setup>
+import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
+import { useEvents } from '@/composables/useEvent'
+import DownloadIcon from '@/components/icons/DownloadIcon.vue'
+
+const toast = useToast()
+const { uploadFile, saveEvent } = useEvents()
+
+const eventData = ref({
+  title: '',
+  description: '',
+  date: '',
+  time: '',
+  location: '',
+  categories: [],
+  email: '',
+  imageUrl: '',
+  price: '',
+  isPaid: false,
+  linkToRegister: '',
+  isInterested: false,
+})
+
+const loading = ref(false)
+const errorMessage = ref('')
+const currentFileName = ref('')
+const selectedCategories = ref([])
+
+const categoryOptions = [
+  'Academic',
+  'Social',
+  'Cultural',
+  'Sports',
+  'Workshop',
+  'Career',
+  'Organization',
+  'Tech',
+]
+async function handleFileUpload(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  loading.value = true
+  const result = await uploadFile(file, currentFileName.value)
+  loading.value = false
+
+  if (result.success) {
+    eventData.value.imageUrl = result.url
+    currentFileName.value = result.fileName
+    toast.success('Upload success')
+  } else {
+    errorMessage.value = result.error
+    toast.error(result.error)
+  }
+}
+
+async function handleSaveEvent() {
+  const requiredFields = ['title', 'description', 'date', 'time', 'location', 'email', 'imageUrl']
+  const missing = requiredFields.filter((f) => !eventData.value[f])
+  if (missing.length) {
+    toast.error(`Missing: ${missing.join(', ')}`)
+    return
+  }
+
+  const result = await saveEvent({
+    ...eventData.value,
+    categories: selectedCategories.value,
+  })
+
+  if (result.success) {
+    toast.success('Event submitted successfully')
+    resetForm()
+  } else {
+    toast.error(result.error)
+  }
+}
+
+function resetForm() {
+  eventData.value = {
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    categories: [],
+    email: '',
+    imageUrl: '',
+    price: '',
+    isPaid: false,
+    linkToRegister: '',
+    isInterested: false,
+  }
+  selectedCategories.value = []
+  currentFileName.value = ''
+}
+</script>
+<template>
+  <div class="create-event-container">
+    <RouterLink to="/" class="nav">
+      <span>←</span>
+      <h2>Create Event</h2>
+    </RouterLink>
+
+    <div class="create-event">
+      <div class="title">
+        <input v-model="eventData.title" type="text" placeholder="" />
+        <p>Event Title</p>
+      </div>
+
+      <div class="description">
+        <textarea v-model="eventData.description" rows="6" placeholder=" "></textarea>
+        <p>Description</p>
+      </div>
+
+      <div class="date-time">
+        <div class="date">
+          <input v-model="eventData.date" type="date" placeholder=" " />
+        </div>
+        <div class="time">
+          <input v-model="eventData.time" type="text" placeholder=" " />
+          <p>Time</p>
+        </div>
+      </div>
+
+      <div class="location">
+        <input v-model="eventData.location" type="text" placeholder=" " />
+        <p>Location</p>
+      </div>
+
+      <div class="categories">
+        <p>Category</p>
+        <p>{{ selectedCategories }}</p>
+        <p>Pick up to 3</p>
+        <div class="categoryContainer">
+          <div v-for="(cat, i) in categoryOptions" :key="i" class="cat">
+            <label
+              :for="cat"
+              :class="{
+                disabled: selectedCategories.length >= 3 && !selectedCategories.includes(cat),
+              }"
+            >
+              {{ cat }}
+            </label>
+            <input
+              type="checkbox"
+              :id="cat"
+              :value="cat"
+              v-model="selectedCategories"
+              :disabled="selectedCategories.length >= 3 && !selectedCategories.includes(cat)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="price">
+        <input v-model="eventData.isPaid" type="checkbox" />
+        <p>Paid? {{ eventData.isPaid }}</p>
+      </div>
+
+      <div v-if="eventData.isPaid" class="amount">
+        <p>Amount</p>
+        <input v-model="eventData.price" type="text" placeholder="Eg. Regular: N500, VIP: N1000" />
+      </div>
+
+      <div class="category">
+        <input v-model="eventData.linkToRegister" type="text" placeholder=" " />
+        <p>Link to register</p>
+      </div>
+
+      <div class="event-image">
+        <input id="uploadFile" type="file" style="display: none" @change="handleFileUpload" />
+        <label for="uploadFile" class="label">
+          <DownloadIcon />
+          <span>Upload image</span>
+        </label>
+        <p v-if="loading">Loading...</p>
+        <div v-if="eventData.imageUrl" class="imageDisplay">
+          <img :src="eventData.imageUrl" alt="event image" />
+        </div>
+      </div>
+
+      <div class="org-email">
+        <input v-model="eventData.email" type="text" placeholder=" " />
+        <p>Organizer Email</p>
+      </div>
+    </div>
+
+    <div v-if="errorMessage" class="error">
+      {{ errorMessage }}
+    </div>
+
+    <div class="save-cancel-btn">
+      <button class="cancel">Cancel</button>
+      <button class="save" @click="handleSaveEvent">Save</button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.categoryContainer {
+  display: flex;
+}
+.error {
+  color: red;
+}
+.testing {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
+}
+.price {
+  display: flex;
+  align-items: center;
+}
+.amount input {
+  width: 100%;
+  outline: none;
+  color: #8c8c8b;
+  border: 1px solid #dfdfdf;
+  height: 54px;
+  padding: 0 17px;
+  font-size: 16px;
+  font-size: 16px;
+}
+.imageDisplay {
+  width: 250px;
+}
+img {
+  width: 100%;
+}
+.label {
+  display: flex;
+  align-items: center;
+}
+.create-event-container {
+  width: 90%;
+  margin: auto;
+}
+.create-event {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  margin-top: 30px;
+}
+textarea {
+  outline: none;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.create-event-container a {
+  color: #000;
+  text-decoration: none;
+}
+.title,
+.time,
+.location,
+.description,
+.category,
+.event-image,
+.org-email,
+.description {
+  position: relative;
+  display: flex;
+}
+.title input,
+.time input,
+.location input,
+.category input,
+.org-email input,
+.category input,
+.org-email input {
+  width: 100%;
+  outline: none;
+  color: #8c8c8b;
+  border: 1px solid #dfdfdf;
+  height: 54px;
+  padding: 0 17px;
+  font-size: 16px;
+  font-size: 16px;
+}
+.description textarea {
+  width: 100%;
+  outline: none;
+  color: #8c8c8b;
+  border: 1px solid #dfdfdf;
+  padding: 5px 17px 0;
+  font-size: 16px;
+}
+.title p,
+.location p,
+.description p,
+.time p,
+.category p,
+.org-email p {
+  margin: 0;
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  font-size: 16px;
+  transition: top 0.1s ease;
+}
+.title input:focus + p,
+.title input:not(:placeholder-shown) + p,
+.location input:focus + p,
+.location input:not(:placeholder-shown) + p,
+.description textarea:focus + p,
+.description textarea:not(:placeholder-shown) + p,
+.time input:focus + p,
+.time input:not(:placeholder-shown) + p,
+.category input:focus + p,
+.category input:not(:placeholder-shown) + p,
+.org-email input:focus + p,
+.org-email input:not(:placeholder-shown) + p {
+  top: -9px;
+  background-color: #fff;
+}
+.date-time {
+  display: flex;
+  width: 100%;
+  gap: 3rem;
+}
+.date,
+.time {
+  flex: 1;
+  width: 100%;
+}
+.date input {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #dfdfdf;
+  padding: 0 17px;
+}
+.save-cancel-btn {
+  margin: 40px 0 40px auto;
+  display: flex;
+  width: 30%;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.save-cancel-btn button {
+  padding: 15px 10px;
+  border-radius: 5px;
+  flex: 1;
+  cursor: pointer;
+  border: none;
+}
+.save-cancel-btn .save {
+  background-color: #0a99fe;
+  color: #fff;
+}
+.event-image {
+  flex-direction: column;
+  background-color: #f0f0f0;
+  padding: 40px;
+  justify-content: center;
+  border-radius: 7px;
+  align-items: center;
+}
+</style>
