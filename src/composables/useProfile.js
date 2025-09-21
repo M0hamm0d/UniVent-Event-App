@@ -1,9 +1,7 @@
 import { ref } from 'vue'
 import { supabase } from '@/supabase'
-// import { modalStore } from '@/stores/counter'
 
 export function useProfile(toast) {
-  // const store = modalStore()
   const formData = ref({
     fullname: '',
     email: '',
@@ -19,7 +17,6 @@ export function useProfile(toast) {
     loading.value = true
 
     try {
-      // delete old file if exists
       if (currentFileName.value) {
         await supabase.storage.from('profile_pictures').remove([currentFileName.value])
       }
@@ -63,7 +60,6 @@ export function useProfile(toast) {
     }
 
     if (data) {
-      // store.imageUrl = formData.value.image_url
       toast?.success('Edit successful')
     }
   }

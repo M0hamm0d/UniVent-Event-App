@@ -17,6 +17,10 @@ export const useUniventStore = defineStore('appStore', () => {
   const signupModal = ref(false)
   const userProfile = ref(null)
   const imageUrl = ref(null)
+  const currentPage = ref(1)
+  const pageCount = ref(0)
+  const interestCount = ref(0)
+  const activeFilters = ref([])
 
   function setEditModal() {
     editModal.value = !editModal.value
@@ -36,9 +40,12 @@ export const useUniventStore = defineStore('appStore', () => {
   }
 
   return {
+    pageCount,
     editModal,
     signupModal,
+    interestCount,
     loginModal,
+    activeFilters,
     isAuthenticated,
     changePasswordModal,
     dateDropdown,
@@ -51,6 +58,7 @@ export const useUniventStore = defineStore('appStore', () => {
     userProfile,
     imageUrl,
     mobileSideBar,
+    currentPage,
     setEditModal,
     setChangePasswordModal,
     setMobileSideBar,

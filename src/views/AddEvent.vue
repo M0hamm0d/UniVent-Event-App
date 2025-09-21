@@ -48,7 +48,6 @@ async function handleFileUpload(e) {
   if (result.success) {
     eventData.value.imageUrl = result.url
     currentFileName.value = result.fileName
-    toast.success('Upload success')
   } else {
     errorMessage.value = result.error
     toast.error(result.error)
@@ -61,6 +60,23 @@ async function handleSaveEvent() {
   if (missing.length) {
     toast.error(`Missing: ${missing.join(', ')}`)
     return
+  }
+
+  if (!/^\d{2}:\d{2}\s?(AM|PM)$/i.test(eventData.value.time)) {
+    errorMessage.value = 'Invalid time format. Use HH:MM AM/PM'
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 4000)
+    return
+  }
+  if (eventData.value.isPaid) {
+    if (!/^\d+$/.test(eventData.value.price)) {
+      errorMessage.value = 'Invalid price format'
+      setTimeout(() => {
+        errorMessage.value = ''
+      }, 4000)
+      return
+    }
   }
 
   const result = await saveEvent({
@@ -120,6 +136,7 @@ function resetForm() {
         <div class="time">
           <input v-model="eventData.time" type="text" placeholder=" " />
           <p>Time</p>
+          <div class="condition">* Use the format HH:MM AM/PM</div>
         </div>
       </div>
 
@@ -160,7 +177,11 @@ function resetForm() {
 
       <div v-if="eventData.isPaid" class="amount">
         <p>Amount</p>
-        <input v-model="eventData.price" type="text" placeholder="Eg. Regular: N500, VIP: N1000" />
+        <div class="amountInput">
+          <span>₦</span>
+          <input v-model="eventData.price" type="text" placeholder="Enter Ticket Amount" />
+        </div>
+        <div class="condition">* Use numbers only, no symbols</div>
       </div>
 
       <div class="category">
@@ -201,8 +222,20 @@ function resetForm() {
 .categoryContainer {
   display: flex;
 }
-.error {
+.error,
+.amount .condition,
+.time .condition {
   color: red;
+}
+.amountInput {
+  position: relative;
+  position: 100%;
+  display: flex;
+}
+.amountInput span {
+  position: absolute;
+  left: 17px;
+  top: 17px;
 }
 .testing {
   display: grid;
@@ -219,7 +252,7 @@ function resetForm() {
   color: #8c8c8b;
   border: 1px solid #dfdfdf;
   height: 54px;
-  padding: 0 17px;
+  padding: 0 35px;
   font-size: 16px;
   font-size: 16px;
 }
@@ -329,9 +362,13 @@ textarea {
   flex: 1;
   width: 100%;
 }
+.time {
+  flex-direction: column;
+  height: 100%;
+}
 .date input {
   width: 100%;
-  height: 100%;
+  height: 54px;
   border: 1px solid #dfdfdf;
   padding: 0 17px;
 }

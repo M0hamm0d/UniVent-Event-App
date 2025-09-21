@@ -1,123 +1,62 @@
 import { ref } from 'vue'
 import { supabase } from '@/supabase'
-// import { modalStore } from '@/stores/counter'
+import { useRequestedEvents } from './useRequestedEvents'
+import { useUniventStore } from '@/stores/counter'
+
+const { fetchRequestedAndEvents } = useRequestedEvents()
 
 export function useEventFilters() {
-  // const store = modalStore()
   const loading = ref(false)
   const noEvent = ref(false)
   const filter = ref([])
-  const debounceTimer = ref(null)
 
-  async function filterUpcomingEventOnlyAndInterested(param) {
-    loading.value = true
-    let today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    // let sessionData = store.session || (await store.fetchSession())
-    // store.session = sessionData
-    //
+  async function filterUpcomingEventOnlyAndInterested(events) {
     const { data, error } = await supabase.auth.getSession()
-    if (error) {
-      console.error('Error fetching session:', error.message)
-      return null
-    }
-    let sessionData = data.session
-    //
-
-    if (!sessionData) {
-      return param
-        .map((e) => ({ ...e, is_interest: false }))
-        .filter((e) => new Date(e.date).setHours(0, 0, 0, 0) >= today)
+    if (error || !data.session) {
+      return events.map((e) => ({ ...e, is_interest: false }))
     }
 
-    const { data: userData, error: userError } = await supabase.auth.getUser()
-    if (userError || !userData.user) {
-      console.error('Error getting user:', userError)
-      return param
-        .map((e) => ({ ...e, is_interest: false }))
-        .filter((e) => new Date(e.date).setHours(0, 0, 0, 0) >= today)
-    }
+    const userId = data.session.user.id
 
     const { data: interested_events, error: interestedError } = await supabase
       .from('interested_events')
       .select('event_id')
-      .eq('user_id', userData.user.id)
+      .eq('user_id', userId)
 
     if (interestedError) {
       console.error('Error fetching interested events:', interestedError)
-      return []
+      return events.map((e) => ({ ...e, is_interest: false }))
     }
 
     const interestedId = new Set(interested_events.map((e) => e.event_id))
 
-    return param
-      .map((e) => ({
-        ...e,
-        is_interest: interestedId.has(e.id),
-      }))
-      .filter((e) => new Date(e.date).setHours(0, 0, 0, 0) >= today)
+    return events.map((e) => ({
+      ...e,
+      is_interest: interestedId.has(e.id),
+    }))
   }
 
   async function handleFilters(filters) {
-    const { data: events, error: event_error } = await supabase.from('events').select('*')
-    if (event_error) {
-      console.error('Error during filter:', event_error.message)
-      return null
-    }
-    let eventsArray = events
-    let upcomingEventArray = await filterUpcomingEventOnlyAndInterested(eventsArray)
+    const univentStore = useUniventStore()
     loading.value = true
 
-    if (filters.searchInput) {
-      if (debounceTimer.value) clearTimeout(debounceTimer.value)
-      debounceTimer.value = setTimeout(() => {
-        const query = filters.searchInput.toLowerCase().trim()
-        const results = upcomingEventArray.filter((e) =>
-          e.event_title.toLowerCase().includes(query),
-        )
-        filter.value = results
-        loading.value = false
-        noEvent.value = results.length === 0
-      }, 500)
-      return
-    }
-
-    if (!filters.price && !filters.location && !filters.category) {
-      filter.value = [...upcomingEventArray]
-      noEvent.value = filter.value.length === 0
-      loading.value = false
-      return
-    }
-
     try {
-      filter.value = upcomingEventArray.filter((event) => {
-        let match = true
-        let categories = Array.isArray(event.category)
-          ? event.category.map((c) => c.toLowerCase())
-          : [String(event.category || '').toLowerCase()]
+      univentStore.currentPage = 1
+      univentStore.activeFilters = filters
 
-        if (filters.category?.length) {
-          match = match && filters.category.some((cat) => categories.includes(cat.toLowerCase()))
-        }
+      const result = await fetchRequestedAndEvents(univentStore.currentPage, filters)
 
-        if (filters.location?.length) {
-          match =
-            match &&
-            filters.location.some((loc) => event.location.toLowerCase().includes(loc.toLowerCase()))
-        }
+      const upcomingEventArray = await filterUpcomingEventOnlyAndInterested(result.events)
+      filter.value = upcomingEventArray
+      noEvent.value = filter.value.length === 0
 
-        if (filters.price) {
-          match = match && event.price <= filters.price
-        }
-
-        return match
-      })
+      univentStore.pageCount = result.pagesNo
     } catch (err) {
       console.error('Error filtering events:', err)
       filter.value = []
+      noEvent.value = true
+      univentStore.pageCount = 0
     } finally {
-      noEvent.value = filter.value.length === 0
       loading.value = false
     }
   }
