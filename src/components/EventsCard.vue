@@ -74,7 +74,7 @@ watch(
           v-if="route.path.startsWith('/discover')"
           @click="handleInterest(event)"
         >
-          {{ event.is_interest ? 'Interested ✔️ ' : 'I am Interested' }}
+          {{ event.is_interest ? 'Interested ✓ ' : 'I am Interested' }}
         </div>
 
         <div class="view-details" @click="selectedEvent = event">

@@ -73,7 +73,6 @@ const fetchSession = async () => {
     console.error('Error fetching session:', error.message)
     return null
   }
-  console.log(data.session)
   return data.session
 }
 const eventValue = ref([])
@@ -85,7 +84,6 @@ onMounted(async () => {
   univentStore.isAuthenticated = !!session?.user
   isAuthenticated.value = !!session?.user
   if (result.success) {
-    console.log('result event', result.events)
     eventValue.value = result.events
   } else {
     console.error(result.error)
@@ -149,11 +147,11 @@ const categories = [
             </button>
           </RouterLink>
         </div>
+        <div class="skeleton" v-if="!eventValue.length >= 1">
+          <SkeletonLoader v-for="i in 3" :key="i" />
+        </div>
         <div v-animate-on-scroll="'event-cards'">
           <EventsCard v-if="eventValue.length >= 1" :events="eventValue.slice(0, 3)" />
-          <div class="skeleton" v-else>
-            <SkeletonLoader v-for="i in 3" :key="i" />
-          </div>
         </div>
       </div>
     </div>
@@ -235,6 +233,10 @@ const categories = [
   flex-direction: column;
   justify-content: center;
   width: 100%;
+}
+.skeleton {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 .hero-section-container {
   overflow: hidden;

@@ -3,7 +3,6 @@ import { supabase } from '@/supabase'
 export const useEvents = () => {
   const uploadFile = async (file, currentFileName) => {
     try {
-      // Delete old file if it exists
       if (currentFileName) {
         const { error: deleteError } = await supabase.storage
           .from('event-fliers')
@@ -13,14 +12,12 @@ export const useEvents = () => {
         }
       }
 
-      // Upload new file
       const fileName = `${Date.now()}_${file.name}`
       const { error: uploadError } = await supabase.storage
         .from('event-fliers')
         .upload(fileName, file, { upsert: true })
       if (uploadError) throw uploadError
 
-      // Get public URL
       const { data: publicUrlData, error: urlError } = supabase.storage
         .from('event-fliers')
         .getPublicUrl(fileName)

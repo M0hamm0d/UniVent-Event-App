@@ -31,6 +31,10 @@ import OrganizersIcon from './icons/OrganizersIcon.vue'
 import PriceIcon from './icons/PriceIcon.vue'
 import { computed, ref } from 'vue'
 const univentStore = useUniventStore()
+let date = ref(null)
+function handleDateChange(e) {
+  filterObject.value.date = e.target.value
+}
 
 const filterObject = ref({
   searchInput: '',
@@ -48,10 +52,12 @@ function resetFilter() {
   filterObject.value.organizers = []
   filterObject.value.date = ''
   filterObject.value.price = ''
+  date.value = ''
 }
 
 function pickDateOrPrice(name = '', value = '') {
   filterObject.value[name] = value
+  date.value = ''
 }
 const emit = defineEmits(['filter-changed', 'search-performed'])
 function showFilterDropdown(param) {
@@ -228,11 +234,18 @@ watch(
             <p>Date Range</p>
             <span><DropdownIcon /></span>
           </div>
-          <ul v-if="univentStore.dateDropdown">
-            <li @click="pickDateOrPrice('date', 'today')">Today</li>
-            <li @click="pickDateOrPrice('date', 'this week')">This Week</li>
-            <li @click="pickDateOrPrice('date', 'this month')">This Month</li>
-            <li>Choose a date <input type="date" v-model="filterObject.date" /></li>
+          <ul v-if="univentStore.dateDropdown" @click.stop>
+            <li @click="pickDateOrPrice('date', 'today')">
+              Today <span v-if="filterObject.date === 'today'">✓</span>
+            </li>
+            <li @click="pickDateOrPrice('date', 'this week')">
+              This Week <span v-if="filterObject.date === 'this week'">✓</span>
+            </li>
+            <li @click="pickDateOrPrice('date', 'this month')">
+              This Month <span v-if="filterObject.date === 'this month'">✓</span>
+            </li>
+            <li>Choose a date <input type="date" v-model="date" @change="handleDateChange" /></li>
+            <!-- <li>Choose a date <input type="date" v-model="filterObject.date" /></li> -->
           </ul>
         </div>
         <div class="category" @click="showFilterDropdown('location')">
@@ -273,17 +286,17 @@ watch(
               />
             </li>
             <li>
-              <label for="online">Stadium</label
+              <label for="stadium">Stadium</label
               ><input
                 type="checkbox"
-                name="online"
-                id="online"
-                value="online"
+                name="stadium"
+                id="stadium"
+                value="stadium"
                 v-model="filterObject.location"
               />
             </li>
             <li>
-              <label for="cultural">Others</label
+              <label for="others">Others</label
               ><input
                 type="checkbox"
                 name="others"
@@ -300,11 +313,11 @@ watch(
             <p>Organizers</p>
             <span><DropdownIcon /></span>
           </div>
-          <ul v-if="univentStore.organizerDropdown">
+          <!-- <ul v-if="univentStore.organizerDropdown">
             <li>Tech</li>
             <li>Academic</li>
             <li>Cultural</li>
-          </ul>
+          </ul> -->
         </div>
         <div class="category" @click="showFilterDropdown('price')">
           <div class="">
@@ -313,11 +326,16 @@ watch(
             <span><DropdownIcon /></span>
           </div>
           <ul v-if="univentStore.priceDropdown">
-            <li @click="pickDateOrPrice('price', 'below 2000')">Below N2000</li>
+            <li @click="pickDateOrPrice('price', 'below 2000')">
+              Below N2000 <span v-if="filterObject.price === 'below 2000'">✓</span>
+            </li>
             <li @click="pickDateOrPrice('price', 'between 2000 and 5000')">
               Between N2000 - N5000
+              <span v-if="filterObject.price === 'between 2000 and 5000'">✓</span>
             </li>
-            <li @click="pickDateOrPrice('price', 'above 5000')">Above N5000</li>
+            <li @click="pickDateOrPrice('price', 'above 5000')">
+              Above N5000 <span v-if="filterObject.price === 'above 5000'">✓</span>
+            </li>
           </ul>
         </div>
         <div class="reset-filter">

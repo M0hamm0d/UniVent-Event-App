@@ -20,6 +20,7 @@ const { logout } = useAuth(toast)
 
 function handleLogout() {
   logout()
+  router.push('/')
 }
 
 const fetchSession = async () => {

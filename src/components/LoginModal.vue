@@ -7,6 +7,7 @@ import { useToast } from 'vue-toastification'
 import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import ScrollHint from './ScrollHint.vue'
+import router from '@/router'
 let toast = useToast()
 const error = ref('')
 const login = useUniventStore()
@@ -21,6 +22,7 @@ const { signIn } = useAuth(toast)
 async function handleLogin() {
   isLoading.value = true
   const { success, error: signInError } = await signIn(email.value, password.value)
+  router.push('/')
 
   if (!success) {
     error.value = signInError
