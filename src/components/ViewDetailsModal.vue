@@ -7,6 +7,7 @@ import OrganizersIcon from './icons/OrganizersIcon.vue'
 import RegisterIcon from './icons/RegisterIcon.vue'
 import ShareIcon from './icons/ShareIcon.vue'
 import ScrollHint from './ScrollHint.vue'
+import dayjs from 'dayjs'
 const emit = defineEmits(['close', 'update-interested'])
 let prop = defineProps({
   event: {
@@ -48,7 +49,10 @@ watch(is_interested, (newVal) => {
           <div class="details">
             <div class="event-meta">
               <span><CalendarIcon /></span>
-              <span>{{ event.date }}</span>
+              <span
+                >{{ dayjs(event.date).format('dddd, MMMM D') }}
+                {{ event.date.split('').slice(0, 4).join('') }}</span
+              >
               <span>•</span>
               <span>{{ event.time }}</span>
             </div>

@@ -1,10 +1,82 @@
 // composables/useAuth.js
 import { supabase } from '@/supabase'
 import { useUniventStore } from '@/stores/counter'
+import { ref } from 'vue'
 
 export function useAuth(toast) {
   const uniVentStore = useUniventStore()
-
+  //
+  const errorMessage = ref('')
+  const signUpForm = ref({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+  function showError(error) {
+    errorMessage.value = error
+    setTimeout(() => {
+      error.value = ''
+    }, 3000)
+  }
+  async function signupBtn(name, email, password, confirmPassword) {
+    signUpForm.value = {
+      name,
+      email,
+      password,
+      confirmPassword,
+    }
+    if (!name || !email || !password || !confirmPassword) {
+      showError('No field must be empty')
+      return
+    }
+    if (password.length < 6) {
+      showError('password must at least be 6 character')
+      return
+    }
+    if (password != confirmPassword) {
+      showError('password do not match')
+      return
+    }
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/
+    if (!strongPassword.test(password)) {
+      showError('Password must include uppercase, lowercase, number, and special character')
+      return
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailPattern.test(email)) {
+      showError('Please enter a valid email address')
+      return
+    }
+    try {
+      let { data, error: supabaseError } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+      if (supabaseError) {
+        showError(supabaseError.message)
+        return
+      }
+      const userId = data.user.id
+      if (userId) {
+        await supabase.from('profile').insert({
+          id: userId,
+          user_name: signUpForm.value.name,
+          user_email: signUpForm.value.email,
+        })
+        uniVentStore.signupModal = false
+        uniVentStore.userProfile.user_name = name
+        uniVentStore.isAuthenticated = true
+        toast?.success('Account created successfully.')
+        return { success: true }
+      }
+    } catch (err) {
+      console.error(err)
+      showError('Something went wrong. Please try again.')
+      return { success: false }
+    }
+  }
+  //
   async function signIn(email, password) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -50,5 +122,5 @@ export function useAuth(toast) {
     return true
   }
 
-  return { signIn, logout }
+  return { signIn, logout, signupBtn, errorMessage }
 }

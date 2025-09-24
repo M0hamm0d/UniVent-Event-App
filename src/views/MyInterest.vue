@@ -104,6 +104,7 @@ watch(
     </div>
 
     <div class="upcoming-events-container">
+      <div class="" v-if="!res.length >= 1 && !loading">No Interested Events</div>
       <EventsCard :events="res" v-if="res.length >= 1 && !loading" @deleteEvent="handleDelete" />
       <div class="" v-if="loading">
         <SkeletonLoader />

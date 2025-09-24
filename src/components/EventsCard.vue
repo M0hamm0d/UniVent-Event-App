@@ -1,12 +1,13 @@
 <script setup>
 import { ref, watch } from 'vue'
-// import { useUniventStore } from '@/stores/counter'
+import dayjs from 'dayjs'
 import { useInterestedEvents } from '@/composables/useInterestedEvents'
 import { useRoute } from 'vue-router'
 import DeleteIcon from './icons/DeleteIcon.vue'
 import ShareIcon from './icons/ShareIcon.vue'
 import CalendarIcon from './icons/CalendarIcon.vue'
 import ViewDetailsModal from './ViewDetailsModal.vue'
+import LocationIcon from './icons/LocationIcon.vue'
 
 // const univentStore = modalStore()
 const route = useRoute()
@@ -57,9 +58,19 @@ watch(
 
       <div class="event-block">
         <h3>{{ event.event_title }}</h3>
-        <div class="event-meta">
+        <div class="event-meta" v-if="route.path === '/'">
           <span><CalendarIcon /> </span>
           <span>{{ event.date }} • {{ event.time }} • {{ event.location }}</span>
+        </div>
+        <div class="event-meta-not-home" v-else>
+          <div class="">
+            <span><CalendarIcon /> </span>
+            <span>{{ dayjs(event.date).format('dddd, MMMM D') }} • {{ event.time }}</span>
+          </div>
+          <div class="">
+            <LocationIcon />
+            <span>{{ event.location }}</span>
+          </div>
         </div>
       </div>
 
@@ -174,6 +185,20 @@ h3 {
   font-size: 15px;
   line-height: 22.5px;
   color: #aaaaaa;
+}
+.event-meta-not-home {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22.5px;
+  color: #aaaaaa;
+}
+.event-meta-not-home div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .interest {
   background-color: transparent;
