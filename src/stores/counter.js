@@ -15,7 +15,7 @@ export const useUniventStore = defineStore('appStore', () => {
   const priceDropdown = ref(false)
   const loginModal = ref(false)
   const signupModal = ref(false)
-  const userProfile = ref(null)
+  const userProfile = ref({})
   const imageUrl = ref(null)
   const currentPage = ref(1)
   const pageCount = ref(0)

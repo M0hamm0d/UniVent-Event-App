@@ -100,9 +100,6 @@ onMounted(async () => {
             <RouterLink to="/discover">
               <li @click="activeNav = ''">Discover Event</li>
             </RouterLink>
-            <RouterLink to="/test-view">
-              <li>test</li>
-            </RouterLink>
             <li
               @click="guardRoute('interested')"
               :class="{ activeRoute: activeNav == 'interested' }"
@@ -125,10 +122,6 @@ onMounted(async () => {
           <button @click="univentStore.loginModal = true" class="login">Log In</button>
           <button class="sign-up" @click="univentStore.signupModal = true">Sign Up</button>
         </div>
-        <!-- <div class="signup-login-btn" v-if="!isAuthenticated">
-          <button @click="univentStore.loginModal = true" class="login">Log In</button>
-          <button class="sign-up" @click="univentStore.signupModal = true">Sign Up</button>
-        </div> -->
         <div v-else>
           <div class="authenticated" v-if="!univentStore.userProfile?.profile_pics">
             <div class="icon" @click="showDropdown = !showDropdown">

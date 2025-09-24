@@ -3,100 +3,34 @@ import GoogleLogo from './icons/GoogleLogo.vue'
 import UniventAuthLogo from './icons/UniventAuthLogo.vue'
 import { useUniventStore } from '../stores/counter'
 import { ref } from 'vue'
-import { supabase } from '@/supabase'
 import ScrollHint from './ScrollHint.vue'
+import { useAuth } from '@/composables/useAuth'
 const login = useUniventStore()
 function openLoginModal() {
   login.loginModal = true
   login.signupModal = false
   console.log('login is' + login.loginModal)
 }
-const error = ref('')
+// const error = ref('')
 const signupName = ref('')
 const signupEmail = ref('')
 const signupPassword = ref('')
 const signupConfirmPassword = ref('')
-const signup = {
-  name: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-}
-const signUpForm = ref(signup)
-async function signupBtn() {
-  signUpForm.value = {
-    ...signUpForm.value,
-    name: signupName.value,
-    email: signupEmail.value,
-    password: signupPassword.value,
-    confirmPassword: signupConfirmPassword.value,
+const { signupBtn, errorMessage } = useAuth()
+const loading = ref(false)
+
+async function handleSignUp() {
+  loading.value = true
+  const { success } = await signupBtn(
+    signupName.value,
+    signupEmail.value,
+    signupPassword.value,
+    signupConfirmPassword.value,
+  )
+  if (!success) {
+    alert('signUp failed')
   }
-  if (
-    signUpForm.value.name == '' ||
-    signUpForm.value.email === '' ||
-    signUpForm.value.password === '' ||
-    signUpForm.value.confirmPassword === ''
-  ) {
-    error.value = 'No Input must be empty'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000)
-    return
-  }
-  if (signUpForm.value.password.length < 6) {
-    error.value = 'password must at least be 6 character'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000)
-    return
-  }
-  if (signUpForm.value.password != signUpForm.value.confirmPassword) {
-    error.value = 'password did not match'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000)
-    return
-  }
-  const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/
-  if (!strongPassword.test(signUpForm.value.password)) {
-    error.value = 'Password must include uppercase, lowercase, number, and special character'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000)
-    return
-  }
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailPattern.test(signUpForm.value.email)) {
-    error.value = 'Please enter a valid email address'
-    setTimeout(() => {
-      error.value = ''
-    }, 3000)
-    return
-  }
-  try {
-    let { data, error: supabaseError } = await supabase.auth.signUp({
-      email: signUpForm.value.email,
-      password: signUpForm.value.password,
-    })
-    if (!supabaseError) {
-      const userId = data.user.id
-      if (userId) {
-        await supabase.from('profile').insert({
-          id: userId,
-          user_name: signUpForm.value.name,
-          user_email: signUpForm.value.email,
-        })
-      }
-      login.signupModal = false
-    } else {
-      error.value = supabaseError.message
-      setTimeout(() => {
-        error.value = ''
-      }, 3000)
-    }
-  } catch {
-    alert('something went wrong')
-  }
+  loading.value = false
 }
 </script>
 
@@ -145,10 +79,12 @@ async function signupBtn() {
           v-model="signupConfirmPassword"
         />
       </div>
-      <p class="error">{{ error }}</p>
+      <p class="error">{{ errorMessage }}</p>
     </div>
     <div class="create-account-section">
-      <button @click="signupBtn">Create Account</button>
+      <button @click="handleSignUp">
+        {{ loading ? 'Creating account...' : 'Create Account' }}
+      </button>
       <div class="or-continue-with">
         <div class=""></div>
         <p>or continue with</p>
