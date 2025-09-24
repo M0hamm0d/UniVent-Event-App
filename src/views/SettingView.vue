@@ -1,6 +1,6 @@
 <script setup>
 import AccountComponent from '@/components/AccountComponent.vue'
-import EventSearchHeader from '@/components/EventSearchHeader.vue'
+// import EventSearchHeader from '@/components/EventSearchHeader.vue'
 import ProfileIcon from '@/components/icons/ProfileIcon.vue'
 import FaqIcon from '@/components/icons/FaqIcon.vue'
 import FaqComponent from '@/components/FaqComponent.vue'
@@ -15,10 +15,10 @@ const active = ref('account')
 </script>
 <template>
   <div>
-    <EventSearchHeader
+    <!-- <EventSearchHeader
       header="Settings & Support"
       title="Customize your UniVent experience, manage your preferences, or get help when you need it. We're here to make campus life easier!"
-    />
+    /> -->
     <div class="content">
       <div class="side-nav">
         <div class="nav-container" @click="active = 'account'">

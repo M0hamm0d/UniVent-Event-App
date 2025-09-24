@@ -100,6 +100,9 @@ onMounted(async () => {
             <RouterLink to="/discover">
               <li @click="activeNav = ''">Discover Event</li>
             </RouterLink>
+            <RouterLink to="/test-view">
+              <li>test</li>
+            </RouterLink>
             <li
               @click="guardRoute('interested')"
               :class="{ activeRoute: activeNav == 'interested' }"

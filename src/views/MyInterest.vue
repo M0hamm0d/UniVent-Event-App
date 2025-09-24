@@ -5,39 +5,79 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import { useToast } from 'vue-toastification'
 import { useInterestedEvents } from '@/composables/useInterestEvents'
 import { useUniventStore } from '@/stores/counter'
-import { onMounted, ref, toRaw, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 
 const toast = useToast()
 const univentStore = useUniventStore()
-const { active, filteredEvents, deleteInterest, loading, fetchInterest } =
-  useInterestedEvents(toast)
+const { active, deleteInterest, loading, fetchInterest, filtersArray } = useInterestedEvents(toast)
+const searchInput = ref(route.query.q || '')
 
 function handleDelete(event) {
   deleteInterest(event)
 }
 const res = ref([])
 watch(active, async () => {
-  result.value = await fetchInterest()
+  univentStore.interestFilters = {
+    ...univentStore.interestFilters,
+    searchInput: '',
+    category: [],
+    activeVal: active,
+  }
+  searchInput.value = ''
+  result.value = await fetchInterest(1, univentStore.interestFilters)
+  router.replace({ query: {} })
   res.value = result.value.events.map((e) => e.events)
-  console.log('result', result.value)
 })
+
 const result = ref([])
 
+const pageSum = ref([])
+async function handleFilters(e) {
+  univentStore.interestFilters = e
+  result.value = await fetchInterest(univentStore.interestCount, e)
+  res.value = result.value.events.map((e) => e.events)
+  for (let i = 0; i < result.value.pageSum; i++) {
+    pageSum.value.push(i + 1)
+  }
+}
 onMounted(async () => {
   univentStore.dateDropdown = false
   univentStore.categoryDropdown = false
   univentStore.locationDropdown = false
   univentStore.organizerDropdown = false
   univentStore.priceDropdown = false
-  console.log('data', filteredEvents.value)
-  result.value = await fetchInterest(1)
+  univentStore.interestCount = Number(route.query.page) || 1
+  result.value = await fetchInterest(univentStore.interestCount)
   res.value = result.value.events.map((e) => e.events)
-  console.log(toRaw(res.value), 'res')
+  for (let i = 0; i < result.value.pageSum; i++) {
+    pageSum.value.push(i + 1)
+  }
 })
 async function pagination(param) {
-  result.value = await fetchInterest(param)
+  result.value = await fetchInterest(param, univentStore.interestFilters)
+  univentStore.interestCount = param
+  console.log(univentStore.interestCurrentPage)
+
   res.value = result.value.events.map((e) => e.events)
+  for (let i = 0; i < result.value.pageSum; i++) {
+    pageSum.value.push(i + 1)
+  }
 }
+watch(
+  () => univentStore.interestCount,
+  (newVal) => {
+    router.replace({
+      query: {
+        ...route.query,
+        page: newVal,
+      },
+    })
+  },
+)
 </script>
 
 <template>
@@ -45,6 +85,7 @@ async function pagination(param) {
     <EventSearchHeader
       header="Interested Events"
       title="Keep track of all the events you’ve marked interest in."
+      @filter-changed="handleFilters"
     />
 
     <div class="upcoming-past">
@@ -61,32 +102,73 @@ async function pagination(param) {
         Past Events
       </button>
     </div>
-    <div class="">
-      <div class="">
-        <button v-for="(data, i) in result.pageSum" :key="i" @click="pagination(i + 1)">
-          {{ i + 1 }}
-        </button>
-      </div>
-    </div>
 
     <div class="upcoming-events-container">
-      <!-- <EventsCard
-        :events="filteredEvents"
-        v-if="filteredEvents.length >= 1"
-        @deleteEvent="handleDelete"
-      /> -->
-      <EventsCard :events="res" v-if="res.length >= 1" @deleteEvent="handleDelete" />
-      <div class="" v-if="!filteredEvents.length >= 1">
+      <EventsCard :events="res" v-if="res.length >= 1 && !loading" @deleteEvent="handleDelete" />
+      <div class="" v-if="loading">
         <SkeletonLoader />
+      </div>
+    </div>
+    <p>{{ filtersArray }}</p>
+    <div class="pagination" v-if="result?.pageSum > 1">
+      <h3>Page {{ result?.currentPage }} of {{ result?.pageSum }}</h3>
+      <div class="buttons">
+        <button
+          v-for="(data, i) in pageSum.slice(0, 3)"
+          :key="i"
+          @click="pagination(i + 1)"
+          :class="{ activeNav: result.currentPage === i + 1 }"
+        >
+          {{ i + 1 }}
+        </button>
+        <select
+          name=""
+          id=""
+          v-model="result.currentPage"
+          @change="pagination($event.target.value)"
+        >
+          <option :value="i" v-for="i in result.pageSum" :key="i">{{ i }}</option>
+        </select>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-content: flex-end;
+  max-width: 95%;
+  width: 100%;
+  /* margin: 30px auto; */
+}
+.pagination h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(31, 31, 31, 1);
+}
+.pagination .buttons {
+  display: flex;
+  gap: 4px;
+}
 .interested-events {
   display: flex;
   flex-direction: column;
+}
+.pagination button {
+  height: 100%;
+  background-color: transparent;
+  color: #aaa;
+  font-size: 14px;
+  padding: 8px;
+  border: none;
+}
+.pagination .activeNav {
+  border: 1px solid #1969fe;
+  color: #1f1f1f;
+  border-radius: 6px;
 }
 .upcoming-events-container {
   max-width: 90%;

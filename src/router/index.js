@@ -33,6 +33,11 @@ const router = createRouter({
       name: 'event request',
       component: () => import('../views/EventRequest.vue'),
     },
+    {
+      path: '/test-view',
+      name: 'test',
+      component: () => import('../views/TestView.vue'),
+    },
   ],
 })
 

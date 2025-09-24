@@ -41,7 +41,7 @@ export function useEventFilters() {
     loading.value = true
 
     try {
-      univentStore.currentPage = 1
+      // univentStore.currentPage = 1
       univentStore.activeFilters = filters
 
       const result = await fetchRequestedAndEvents(univentStore.currentPage, filters)
