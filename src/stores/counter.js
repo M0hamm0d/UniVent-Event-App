@@ -19,8 +19,9 @@ export const useUniventStore = defineStore('appStore', () => {
   const imageUrl = ref(null)
   const currentPage = ref(1)
   const pageCount = ref(0)
-  const interestCount = ref(0)
+  const interestCount = ref(1)
   const activeFilters = ref([])
+  const interestFilters = ref({})
 
   function setEditModal() {
     editModal.value = !editModal.value
@@ -41,6 +42,7 @@ export const useUniventStore = defineStore('appStore', () => {
 
   return {
     pageCount,
+    interestFilters,
     editModal,
     signupModal,
     interestCount,

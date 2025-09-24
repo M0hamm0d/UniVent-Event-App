@@ -2,16 +2,20 @@
 import EventSearchHeader from '@/components/EventSearchHeader.vue'
 import EventsCard from '@/components/EventsCard.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useEventFilters } from '@/composables/useEventFilters'
 import { useRequestedEvents } from '@/composables/useRequestedEvents'
 import { useUniventStore } from '@/stores/counter'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const { filter, loading, noEvent, handleFilters, filterUpcomingEventOnlyAndInterested } =
   useEventFilters()
 const { fetchRequestedAndEvents } = useRequestedEvents()
 const univentStore = useUniventStore()
 const pagesNo = ref(false)
+const emptyEvent = ref(false)
 const resultNo = ref(null)
 const count = ref(null)
 onMounted(async () => {
@@ -20,19 +24,24 @@ onMounted(async () => {
   univentStore.locationDropdown = false
   univentStore.organizerDropdown = false
   univentStore.priceDropdown = false
+  univentStore.currentPage = Number(route.query.page) || 1
+
+  console.log(route.query)
   try {
     loading.value = true
-    const result = await fetchRequestedAndEvents(univentStore.currentPage)
+    const result = await fetchRequestedAndEvents(
+      univentStore.currentPage,
+      univentStore.activeFilters,
+    )
     for (let i = 0; i < result.pagesNo; i++) {
       test.value.push(i)
     }
     pagesNo.value = univentStore.pageCount > 1
     resultNo.value = result.pagesNo
     count.value = result.count
-    if (result.events?.length > 0) {
-      filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
-    } else {
-      filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
+    filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
+    if (filter.value.length == 0) {
+      emptyEvent.value = true
     }
   } catch (err) {
     console.error('onMounted error:', err)
@@ -58,6 +67,18 @@ async function pagination(param) {
     loading.value = false
   }
 }
+watch(
+  () => univentStore.currentPage,
+  (newVal) => {
+    router.replace({
+      query: {
+        ...route.query,
+        page: newVal,
+      },
+    })
+    console.log(newVal)
+  },
+)
 </script>
 <template>
   <div>
@@ -76,6 +97,7 @@ async function pagination(param) {
       <div class="events-section" v-if="!loading">
         <EventsCard :events="filter" />
       </div>
+      <div class="" v-if="emptyEvent">Sorry no event</div>
       <div class="pagination" v-if="univentStore.pageCount > 1">
         <h3>Page {{ univentStore.currentPage }} of {{ univentStore.pageCount }}</h3>
         <div class="buttons">
@@ -103,38 +125,6 @@ async function pagination(param) {
           </select>
         </div>
       </div>
-
-      <!-- <div class="pagination" v-if="pagesNo">
-        <h3>
-          Page {{ univentStore.currentPage }} of {{ resultNo }} pinia count{{
-            univentStore.pageCount
-          }}
-        </h3>
-        <div class="buttons">
-          <button
-            class=""
-            v-for="(_e, i) in test.slice(0, 3)"
-            :key="i"
-            @click="pagination(i + 1)"
-            :class="{ activeFilter: univentStore.currentPage == i + 1 }"
-          >
-            {{ i + 1 }}
-          </button>
-        </div>
-        <div class="go-to-page">
-          <p>Go to page</p>
-          <select
-            name="page"
-            id="page"
-            @change="pagination($event.target.value)"
-            v-model="univentStore.currentPage"
-          >
-            <option v-for="i in resultNo" :value="i" :key="i">
-              {{ i }}
-            </option>
-          </select>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>

@@ -26,14 +26,9 @@ function handleDelete(event) {
 }
 
 async function handleInterest(event) {
-  console.log(event)
   await toggleInterest(event, localEvents)
 }
 
-// onMounted(async () => {
-//   await store.subscribeToEvents()
-//   store.handleAuthStateChange()
-// })
 async function updateInterested(e) {
   await toggleInterest(e.event, localEvents)
 }

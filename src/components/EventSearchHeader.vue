@@ -1,13 +1,31 @@
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
+const router = useRouter()
 import { useUniventStore } from '@/stores/counter'
+import FiltersIcon from './icons/FiltersIcon.vue'
+import SortIcon from './icons/SortIcon.vue'
+import Search2Icon from './icons/Search2Icon.vue'
+import CategoryIcon from './icons/CategoryIcon.vue'
+import DropdownIcon from './icons/DropdownIcon.vue'
+import ResetFilter from './icons/ResetFilter.vue'
+import { onMounted, watch } from 'vue'
+// import DateRange from './icons/Daterange.vue'
+import DateRange from './icons/DateRange.vue'
+import LocationIcon from './icons/LocationIcon.vue'
+import OrganizersIcon from './icons/OrganizersIcon.vue'
+import PriceIcon from './icons/PriceIcon.vue'
+import { computed, ref } from 'vue'
+const univentStore = useUniventStore()
 const showCategoryFilter = computed(() => {
   return route.path === '/interested' || route.path === '/discover'
 })
 
 defineProps({
   title: {
+    type: String,
+  },
+  searchInput: {
     type: String,
   },
   header: {
@@ -17,27 +35,13 @@ defineProps({
     type: String,
   },
 })
-import FiltersIcon from './icons/FiltersIcon.vue'
-import SortIcon from './icons/SortIcon.vue'
-import Search2Icon from './icons/Search2Icon.vue'
-import CategoryIcon from './icons/CategoryIcon.vue'
-import DropdownIcon from './icons/DropdownIcon.vue'
-import ResetFilter from './icons/ResetFilter.vue'
-import { watch } from 'vue'
-// import DateRange from './icons/Daterange.vue'
-import DateRange from './icons/DateRange.vue'
-import LocationIcon from './icons/LocationIcon.vue'
-import OrganizersIcon from './icons/OrganizersIcon.vue'
-import PriceIcon from './icons/PriceIcon.vue'
-import { computed, ref } from 'vue'
-const univentStore = useUniventStore()
 let date = ref(null)
 function handleDateChange(e) {
   filterObject.value.date = e.target.value
 }
 
 const filterObject = ref({
-  searchInput: '',
+  searchInput: route.query.q || '',
   category: [],
   location: [],
   organizers: [],
@@ -97,13 +101,67 @@ function showFilterDropdown(param) {
     univentStore.priceDropdown = !univentStore.priceDropdown
   }
 }
+
 watch(
   filterObject,
   (newVal) => {
     emit('filter-changed', newVal)
+    router.replace({
+      query: {
+        ...route.query,
+        q: newVal?.searchInput || undefined,
+        category: newVal?.category.join(',') || undefined,
+        location: newVal?.location.join(',') || undefined,
+        date: newVal?.date || undefined,
+        price: newVal?.price || undefined,
+      },
+    })
   },
   { deep: true },
 )
+// watch(
+//   () => filterObject.value.searchInput,
+//   (newVal) => {
+//     router.replace({
+//       query: {
+//         ...route.query,
+//         q: newVal || undefined,
+//       },
+//     })
+//   },
+// )
+watch(
+  () => univentStore.interestFilters.activeVal,
+  (newVal) => {
+    console.log(newVal, 'newVal')
+    filterObject.value.category = []
+    filterObject.value.location = []
+    filterObject.value.date = ''
+    filterObject.value.price = ''
+    univentStore.interestCount = 1
+  },
+)
+watch(
+  () => route.query.q,
+  (newVal) => {
+    filterObject.value.searchInput = newVal || ''
+  },
+)
+
+onMounted(() => {
+  univentStore.activeFilters = {
+    ...univentStore.activeFilters,
+    searchInput: filterObject.value.searchInput || '',
+    category: route.query?.category ? route.query.category.split(',') : [],
+    location: route.query?.location ? route.query.location.split(',') : [],
+    date: route.query?.date ? route.query.date : '',
+    price: route.query?.price ? route.query.price : '',
+  }
+  filterObject.value.category = univentStore.activeFilters.category
+  filterObject.value.location = univentStore.activeFilters.location
+
+  emit('filter-changed', filterObject.value)
+})
 </script>
 <template>
   <div class="">
