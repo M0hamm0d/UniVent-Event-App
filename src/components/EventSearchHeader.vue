@@ -119,17 +119,6 @@ watch(
   },
   { deep: true },
 )
-// watch(
-//   () => filterObject.value.searchInput,
-//   (newVal) => {
-//     router.replace({
-//       query: {
-//         ...route.query,
-//         q: newVal || undefined,
-//       },
-//     })
-//   },
-// )
 watch(
   () => univentStore.interestFilters.activeVal,
   (newVal) => {

@@ -8,8 +8,9 @@ import ShareIcon from './icons/ShareIcon.vue'
 import CalendarIcon from './icons/CalendarIcon.vue'
 import ViewDetailsModal from './ViewDetailsModal.vue'
 import LocationIcon from './icons/LocationIcon.vue'
+import { useUniventStore } from '@/stores/counter'
 
-// const univentStore = modalStore()
+const univentStore = useUniventStore()
 const route = useRoute()
 const { toggleInterest } = useInterestedEvents()
 
@@ -90,12 +91,15 @@ watch(
             :event="selectedEvent"
             @close="selectedEvent = null"
             @update-interested="updateInterested"
+            @share-clicked="univentStore.shareEvent(event.id)"
             @click.stop
           />
         </div>
 
         <div class="share-and-delete" v-if="route.path.startsWith('/interested')">
-          <button class="share-btn"><ShareIcon /></button>
+          <button class="share-btn" @click="univentStore.shareEvent(event.id)">
+            <ShareIcon />
+          </button>
           <button class="delete-btn" @click="handleDelete(event)"><DeleteIcon /></button>
           <!-- <button class="delete-btn" @click="checkInterestedStatus(event)"><DeleteIcon /></button> -->
         </div>

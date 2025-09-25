@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
 
 export const useUniventStore = defineStore('appStore', () => {
   const editModal = ref(false)
@@ -31,6 +33,11 @@ export const useUniventStore = defineStore('appStore', () => {
   }
   function setChangePasswordModal() {
     changePasswordModal.value = !changePasswordModal.value
+  }
+  function shareEvent(eventId) {
+    const url = `${window.location.origin}/discover?eventId=${eventId}&modal=open`
+    navigator.clipboard.writeText(url)
+    toast.success('Link copied to clipboard')
   }
 
   function $reset() {
@@ -64,6 +71,7 @@ export const useUniventStore = defineStore('appStore', () => {
     setEditModal,
     setChangePasswordModal,
     setMobileSideBar,
+    shareEvent,
     $reset,
   }
 })

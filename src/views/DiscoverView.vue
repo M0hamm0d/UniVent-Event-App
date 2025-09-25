@@ -7,9 +7,11 @@ import { useEventFilters } from '@/composables/useEventFilters'
 import { useRequestedEvents } from '@/composables/useRequestedEvents'
 import { useUniventStore } from '@/stores/counter'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const { filter, loading, noEvent, handleFilters, filterUpcomingEventOnlyAndInterested } =
   useEventFilters()
 const { fetchRequestedAndEvents } = useRequestedEvents()
@@ -17,7 +19,9 @@ const univentStore = useUniventStore()
 const pagesNo = ref(false)
 const emptyEvent = ref(false)
 const resultNo = ref(null)
+const unavailableEvent = ref(false)
 const count = ref(null)
+const searchFromId = ref([])
 onMounted(async () => {
   univentStore.dateDropdown = false
   univentStore.categoryDropdown = false
@@ -26,27 +30,37 @@ onMounted(async () => {
   univentStore.priceDropdown = false
   univentStore.currentPage = Number(route.query.page) || 1
 
-  console.log(route.query)
-  try {
-    loading.value = true
-    const result = await fetchRequestedAndEvents(
-      univentStore.currentPage,
-      univentStore.activeFilters,
-    )
-    for (let i = 0; i < result.pagesNo; i++) {
-      test.value.push(i)
+  if (route.query.eventId) {
+    const allEvent = await fetchRequestedAndEvents(univentStore.currentPage)
+    searchFromId.value = allEvent.allEvents.filter((e) => e.id === route.query.eventId)
+    if (searchFromId.value.length === 0) {
+      toast.error('Event is currently unavailable')
+      unavailableEvent.value = true
     }
-    pagesNo.value = univentStore.pageCount > 1
-    resultNo.value = result.pagesNo
-    count.value = result.count
-    filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
-    if (filter.value.length == 0) {
-      emptyEvent.value = true
+    return
+  } else if (!route.query.eventId) {
+    try {
+      loading.value = true
+      const result = await fetchRequestedAndEvents(
+        univentStore.currentPage,
+        univentStore.activeFilters,
+      )
+      console.log(result.events)
+      for (let i = 0; i < result.pagesNo; i++) {
+        test.value.push(i)
+      }
+      pagesNo.value = univentStore.pageCount > 1
+      resultNo.value = result.pagesNo
+      count.value = result.count
+      filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
+      if (filter.value.length == 0) {
+        emptyEvent.value = true
+      }
+    } catch (err) {
+      console.error('onMounted error:', err)
+    } finally {
+      loading.value = false
     }
-  } catch (err) {
-    console.error('onMounted error:', err)
-  } finally {
-    loading.value = false
   }
 })
 const test = ref([])
@@ -66,6 +80,9 @@ async function pagination(param) {
   } finally {
     loading.value = false
   }
+}
+function backToDiscoverPage() {
+  router.replace({ query: {} })
 }
 watch(
   () => univentStore.currentPage,
@@ -94,11 +111,15 @@ watch(
       <div class="skeleton" v-if="loading">
         <SkeletonLoader v-for="i in 3" :key="i" />
       </div>
+      <button class="" v-if="route.query.eventId" @click="backToDiscoverPage">
+        ← Back to all Event
+      </button>
+      <div class="" v-if="unavailableEvent">Event currently unavailable</div>
       <div class="events-section" v-if="!loading">
-        <EventsCard :events="filter" />
+        <EventsCard :events="route.query.eventId ? searchFromId : filter" />
       </div>
       <div class="" v-if="emptyEvent">Sorry no event</div>
-      <div class="pagination" v-if="univentStore.pageCount > 1">
+      <div class="pagination" v-if="univentStore.pageCount > 1 && !route.query.eventId">
         <h3>Page {{ univentStore.currentPage }} of {{ univentStore.pageCount }}</h3>
         <div class="buttons">
           <button
