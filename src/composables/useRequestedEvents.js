@@ -82,6 +82,7 @@ export const useRequestedEvents = () => {
           success: true,
           requested_event: requested_event || [],
           events: events.slice(from, to + 1) || [],
+          allEvents: events,
           pagesNo: univentStore.pageCount,
           count: count,
         }
@@ -112,6 +113,7 @@ export const useRequestedEvents = () => {
         requested_event: requested_event || [],
         events: orderedEvent.slice(from, to + 1),
         pagesNo: univentStore.pageCount,
+        allEvents: events,
         count: count,
       }
     } catch (err) {

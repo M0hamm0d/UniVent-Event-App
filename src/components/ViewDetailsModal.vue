@@ -8,7 +8,7 @@ import RegisterIcon from './icons/RegisterIcon.vue'
 import ShareIcon from './icons/ShareIcon.vue'
 import ScrollHint from './ScrollHint.vue'
 import dayjs from 'dayjs'
-const emit = defineEmits(['close', 'update-interested'])
+const emit = defineEmits(['close', 'update-interested', 'share-clicked'])
 let prop = defineProps({
   event: {
     type: Object,
@@ -88,7 +88,7 @@ watch(is_interested, (newVal) => {
             />
             <p>I'm Interested</p>
           </div>
-          <button>
+          <button @click="emit('share-clicked')">
             <ShareIcon />
           </button>
         </div>
