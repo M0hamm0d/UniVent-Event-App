@@ -5,7 +5,7 @@ import { useUniventStore } from '@/stores/counter'
 export const useRequestedEvents = () => {
   const today = new Date().toISOString().split('T')[0]
   const univentStore = useUniventStore()
-  const perPage = ref(3)
+  const perPage = ref(9)
 
   const fetchRequestedAndEvents = async (page = 1, filters = {}) => {
     const from = (page - 1) * perPage.value
@@ -113,7 +113,8 @@ export const useRequestedEvents = () => {
         requested_event: requested_event || [],
         events: orderedEvent.slice(from, to + 1),
         pagesNo: univentStore.pageCount,
-        allEvents: events,
+        allEvents: orderedEvent,
+        // allEvents: events,
         count: count,
       }
     } catch (err) {

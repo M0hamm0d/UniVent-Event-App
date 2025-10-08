@@ -153,6 +153,11 @@ const categories = [
         <div v-animate-on-scroll="'event-cards'">
           <EventsCard v-if="eventValue.length >= 1" :events="eventValue.slice(0, 3)" />
         </div>
+        <RouterLink to="/discover">
+          <button class="explore-btn explore-btn-mobile">
+            Explore More Events <span><ArrowUpBlue /></span>
+          </button>
+        </RouterLink>
       </div>
     </div>
     <div v-animate-on-scroll="'browse-by-category'">
@@ -237,6 +242,7 @@ const categories = [
 .skeleton {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
 }
 .hero-section-container {
   overflow: hidden;
@@ -293,6 +299,7 @@ const categories = [
 .hero-explore-btn {
   padding: 16px;
   display: flex;
+  width: 100%;
   gap: 4px;
   border-radius: 64px;
   font-weight: 600;
@@ -306,6 +313,7 @@ const categories = [
 }
 .hero-explore-btn span {
   display: flex;
+  font-size: 15px;
 }
 .hero-post-btn {
   padding: 16px 20px;
@@ -419,6 +427,9 @@ const categories = [
   gap: 5px;
   align-items: center;
   transition: all 0.5s;
+}
+.explore-btn-mobile {
+  display: none;
 }
 .explore-btn:hover {
   background-color: #1969fe;
@@ -656,7 +667,7 @@ const categories = [
     flex-direction: column;
     gap: 20px;
   }
-  .img {
+  .img.show {
     transform: translateX(0);
   }
   .img img {
@@ -682,12 +693,64 @@ const categories = [
     flex: 1;
     justify-content: center;
   }
+  .upcoming-highlights {
+    padding: 46px 0;
+    margin: 0 auto;
+    gap: 40px;
+  }
+  .highlights-intro > div {
+    gap: 6px;
+  }
+  .upcoming-highlights > a {
+    text-decoration: none;
+    margin: auto;
+  }
+  .explore-btn {
+    display: none;
+    text-decoration: none;
+  }
+  .explore-btn-mobile {
+    display: flex;
+  }
+  .browse-by-category h2,
+  .how-univent-work h2 {
+    font-size: 24px;
+  }
   .highlights-intro h2 {
     font-size: 24px;
     line-height: 100%;
   }
   .highlights-intro p {
     font-size: 12px;
+  }
+  .process {
+    flex-direction: column;
+  }
+  .process > div {
+    border-right: none;
+    padding: 0 0 10px;
+    gap: 20px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  .carousel {
+    margin-bottom: 110px;
+  }
+  .carousel-card {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  .carousel-card-0 h3,
+  .carousel-card-1 h3 {
+    font-size: 24px;
+  }
+  .carousel-card-0 button,
+  .carousel-card-1 button {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+  .hero-content div a {
+    width: 100%;
   }
 }
 </style>

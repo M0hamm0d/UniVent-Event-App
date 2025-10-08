@@ -86,7 +86,7 @@ async function handleLogin() {
           cursor: isLoading ? 'not-allowed' : 'pointer',
         }"
       >
-        {{ isLoading ? 'Signing In....' : 'Login' }}
+        {{ isLoading ? 'Signing In....' : 'Log in' }}
       </button>
       <div class="or-continue-with">
         <div class=""></div>

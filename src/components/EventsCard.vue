@@ -1,8 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, toRaw, watch } from 'vue'
 import dayjs from 'dayjs'
 import { useInterestedEvents } from '@/composables/useInterestedEvents'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DeleteIcon from './icons/DeleteIcon.vue'
 import ShareIcon from './icons/ShareIcon.vue'
 import CalendarIcon from './icons/CalendarIcon.vue'
@@ -12,6 +12,7 @@ import { useUniventStore } from '@/stores/counter'
 
 const univentStore = useUniventStore()
 const route = useRoute()
+const router = useRouter()
 const { toggleInterest } = useInterestedEvents()
 
 const props = defineProps({
@@ -38,6 +39,27 @@ watch(
   () => props.events,
   (newVal) => {
     localEvents.value = [...(newVal || [])]
+    const eventSelected = ref(localEvents.value.find((e) => e.id === route.query.id))
+    selectedEvent.value = eventSelected.value
+    // console.log('Updated localEvents:', toRaw(localEvents.value))
+  },
+  { immediate: true },
+)
+watch(
+  () => selectedEvent.value,
+  (newVal) => {
+    if (newVal !== null) {
+      router.replace({
+        query: {
+          ...route.query,
+          modal: 'open',
+          id: selectedEvent.value.id,
+        },
+      })
+    } else {
+      const { modal, id, ...rest } = route.query
+      router.replace({ query: rest })
+    }
   },
 )
 </script>
@@ -59,18 +81,13 @@ watch(
 
       <div class="event-block">
         <h3>{{ event.event_title }}</h3>
-        <div class="event-meta" v-if="route.path === '/'">
-          <span><CalendarIcon /> </span>
-          <span>{{ event.date }} • {{ event.time }} • {{ event.location }}</span>
-        </div>
-        <div class="event-meta-not-home" v-else>
+        <div :class="['event-date-and-location', { notHomePage: route.path !== '/' }]">
           <div class="">
-            <span><CalendarIcon /> </span>
-            <span>{{ dayjs(event.date).format('dddd, MMMM D') }} • {{ event.time }}</span>
+            <CalendarIcon /> {{ dayjs(event.date).format('dddd, MMMM D') }} • {{ event.time }}
           </div>
-          <div class="">
-            <LocationIcon />
-            <span>{{ event.location }}</span>
+          <div :class="route.path !== '/' ? 'event-location' : ''">
+            <span v-if="route.path == '/'"> • </span>
+            <LocationIcon v-if="route.path !== '/'" />{{ event.location }}
           </div>
         </div>
       </div>
@@ -86,14 +103,16 @@ watch(
 
         <div class="view-details" @click="selectedEvent = event">
           <p>View Details</p>
-          <ViewDetailsModal
-            v-if="selectedEvent"
-            :event="selectedEvent"
-            @close="selectedEvent = null"
-            @update-interested="updateInterested"
-            @share-clicked="univentStore.shareEvent(event.id)"
-            @click.stop
-          />
+          <teleport to="body">
+            <ViewDetailsModal
+              v-if="selectedEvent"
+              :event="selectedEvent"
+              @close="selectedEvent = null"
+              @update-interested="updateInterested"
+              @share-clicked="univentStore.shareEvent(event?.id)"
+              @click.stop
+            />
+          </teleport>
         </div>
 
         <div class="share-and-delete" v-if="route.path.startsWith('/interested')">
@@ -199,6 +218,21 @@ h3 {
   line-height: 22.5px;
   color: #aaaaaa;
 }
+.event-date-and-location {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  color: #aaaaaa;
+}
+.event-date-and-location.notHomePage {
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.event-location {
+  display: flex;
+  align-items: center;
+}
 .event-meta-not-home div {
   display: flex;
   align-items: center;
@@ -218,16 +252,17 @@ h3 {
 }
 .view-details {
   width: 100%;
+  border: 1px solid #eaeaea;
+  padding: 16px;
+  border-radius: 64px;
+  cursor: pointer;
 }
 .view-details > p {
   width: 100%;
-  padding: 16px 0;
-  border: 1px solid #eaeaea;
+  /* padding: 16px 0; */
   font-size: 19px;
   font-weight: 600;
   text-align: center;
-  border-radius: 64px;
-  cursor: pointer;
   transition: all 0.5s;
 }
 .detail-modal {
@@ -281,6 +316,9 @@ h3 {
   .view-details,
   .interest {
     padding: 14px;
+    font-size: 15px;
+  }
+  .view-details > p {
     font-size: 15px;
   }
   .price {

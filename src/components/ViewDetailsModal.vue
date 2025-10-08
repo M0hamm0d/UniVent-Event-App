@@ -13,6 +13,9 @@ let prop = defineProps({
   event: {
     type: Object,
   },
+  className: {
+    type: String,
+  },
 })
 function updateInterested(e) {
   emit('update-interested', { checked: e.target.checked, event: prop.event })
@@ -106,6 +109,7 @@ watch(is_interested, (newVal) => {
   position: fixed;
   display: flex;
   inset: 0 0 0 0;
+  z-index: 50;
   background: rgba(0, 0, 0, 0.1);
 }
 .divider-line {
@@ -180,6 +184,7 @@ h4 {
 }
 .event-flier img {
   width: 100%;
+  height: 260px;
 }
 .event-overview {
   display: flex;

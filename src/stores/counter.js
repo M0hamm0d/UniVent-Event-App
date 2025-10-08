@@ -21,6 +21,7 @@ export const useUniventStore = defineStore('appStore', () => {
   const imageUrl = ref(null)
   const currentPage = ref(1)
   const pageCount = ref(0)
+  const pageSum = ref([])
   const interestCount = ref(1)
   const activeFilters = ref([])
   const interestFilters = ref({})
@@ -35,7 +36,7 @@ export const useUniventStore = defineStore('appStore', () => {
     changePasswordModal.value = !changePasswordModal.value
   }
   function shareEvent(eventId) {
-    const url = `${window.location.origin}/discover?eventId=${eventId}&modal=open`
+    const url = `${window.location.origin}/discover?eventId=${eventId}`
     navigator.clipboard.writeText(url)
     toast.success('Link copied to clipboard')
   }
@@ -49,6 +50,7 @@ export const useUniventStore = defineStore('appStore', () => {
 
   return {
     pageCount,
+    pageSum,
     interestFilters,
     editModal,
     signupModal,
