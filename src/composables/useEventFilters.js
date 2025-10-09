@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 import { supabase } from '@/supabase'
-import { useRequestedEvents } from './useRequestedEvents'
-import { useUniventStore } from '@/stores/counter'
+// import { useRequestedEvents } from './useRequestedEvents'
+// import { useUniventStore } from '@/stores/counter'
 
-const { fetchRequestedAndEvents } = useRequestedEvents()
+// const { fetchRequestedAndEvents } = useRequestedEvents()
 
 export function useEventFilters() {
   const loading = ref(false)
@@ -36,36 +36,39 @@ export function useEventFilters() {
     }))
   }
 
-  async function handleFilters(filters) {
-    const univentStore = useUniventStore()
-    loading.value = true
+  // async function handleFilters(filters) {
+  //   const univentStore = useUniventStore()
+  //   loading.value = true
 
-    try {
-      // univentStore.currentPage = 1
-      univentStore.activeFilters = filters
+  //   try {
+  //     // univentStore.currentPage = 1
+  //     univentStore.activeFilters = filters
+  //     const result = await fetchRequestedAndEvents(univentStore.currentPage, filters)
+  //     univentStore.pageSum = []
+  //     for (let i = 1; i <= result.pagesNo; i++) {
+  //       univentStore.pageSum.push(i)
+  //     }
+  //     const upcomingEventArray = await filterUpcomingEventOnlyAndInterested(result.events)
+  //     filter.value = upcomingEventArray
+  //     console.log(toRaw(result))
+  //     noEvent.value = filter.value.length === 0
 
-      const result = await fetchRequestedAndEvents(univentStore.currentPage, filters)
-
-      const upcomingEventArray = await filterUpcomingEventOnlyAndInterested(result.events)
-      filter.value = upcomingEventArray
-      noEvent.value = filter.value.length === 0
-
-      univentStore.pageCount = result.pagesNo
-    } catch (err) {
-      console.error('Error filtering events:', err)
-      filter.value = []
-      noEvent.value = true
-      univentStore.pageCount = 0
-    } finally {
-      loading.value = false
-    }
-  }
+  //     univentStore.pageCount = result.pagesNo
+  //   } catch (err) {
+  //     console.error('Error filtering events:', err)
+  //     filter.value = []
+  //     noEvent.value = true
+  //     univentStore.pageCount = 0
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
 
   return {
     filter,
     loading,
     noEvent,
-    handleFilters,
+    // handleFilters,
     filterUpcomingEventOnlyAndInterested,
   }
 }

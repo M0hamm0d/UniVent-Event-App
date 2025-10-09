@@ -2,7 +2,7 @@
 import EventSearchHeader from '@/components/EventSearchHeader.vue'
 import EventsCard from '@/components/EventsCard.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useEventFilters } from '@/composables/useEventFilters'
 import { useRequestedEvents } from '@/composables/useRequestedEvents'
 import { useUniventStore } from '@/stores/counter'
@@ -12,8 +12,7 @@ import { useToast } from 'vue-toastification'
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-const { filter, loading, noEvent, handleFilters, filterUpcomingEventOnlyAndInterested } =
-  useEventFilters()
+const { filter, loading, noEvent, filterUpcomingEventOnlyAndInterested } = useEventFilters()
 const { fetchRequestedAndEvents } = useRequestedEvents()
 const univentStore = useUniventStore()
 const pagesNo = ref(false)
@@ -22,6 +21,7 @@ const resultNo = ref(null)
 const unavailableEvent = ref(false)
 const count = ref(null)
 const searchFromId = ref([])
+const isFilterActive = ref(false)
 onMounted(async () => {
   univentStore.dateDropdown = false
   univentStore.categoryDropdown = false
@@ -45,9 +45,9 @@ onMounted(async () => {
         univentStore.currentPage,
         univentStore.activeFilters,
       )
-      console.log(result.events)
-      for (let i = 0; i < result.pagesNo; i++) {
-        test.value.push(i)
+      univentStore.pageSum = []
+      for (let i = 1; i <= result.pagesNo; i++) {
+        univentStore.pageSum.push(i)
       }
       pagesNo.value = univentStore.pageCount > 1
       resultNo.value = result.pagesNo
@@ -63,15 +63,25 @@ onMounted(async () => {
     }
   }
 })
-const test = ref([])
+
 async function pagination(param) {
   univentStore.currentPage = param
+  router.replace({
+    query: {
+      ...route.query,
+      page: univentStore.currentPage,
+    },
+  })
   try {
     loading.value = true
     const result = await fetchRequestedAndEvents(
       univentStore.currentPage,
       univentStore.activeFilters,
     )
+    univentStore.pageSum = []
+    for (let i = 1; i <= result.pagesNo; i++) {
+      univentStore.pageSum.push(i)
+    }
 
     filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
     univentStore.pageCount = result.pagesNo
@@ -81,72 +91,98 @@ async function pagination(param) {
     loading.value = false
   }
 }
+async function handleFilters(filters) {
+  loading.value = true
+
+  try {
+    univentStore.currentPage = 1
+    univentStore.activeFilters = filters
+    const result = await fetchRequestedAndEvents(univentStore.currentPage, filters)
+
+    univentStore.pageSum = []
+    for (let i = 1; i <= result.pagesNo; i++) {
+      univentStore.pageSum.push(i)
+    }
+
+    filter.value = await filterUpcomingEventOnlyAndInterested(result.events)
+    noEvent.value = filter.value.length === 0
+    univentStore.pageCount = result.pagesNo
+  } catch (err) {
+    console.error('Error filtering events:', err)
+    filter.value = []
+    noEvent.value = true
+    univentStore.pageCount = 0
+  } finally {
+    loading.value = false
+  }
+}
+
 function backToDiscoverPage() {
   router.replace({ query: {} })
 }
-watch(
-  () => univentStore.currentPage,
-  (newVal) => {
-    router.replace({
-      query: {
-        ...route.query,
-        page: newVal,
-      },
-    })
-    console.log(newVal)
-  },
-)
+function showFilter() {
+  isFilterActive.value = !isFilterActive.value
+}
 </script>
 <template>
-  <div>
-    <div class="">
-      <EventSearchHeader
-        header="Discover Events on Campus"
-        title="Find the best happenings on campus – from academic workshops to social hangouts."
-        @filter-changed="handleFilters"
-      />
-      <div class="no-result" v-if="noEvent">
-        <img src="/no-result.png" alt="" />
+  <div class="">
+    <EventSearchHeader
+      header="Discover Events on Campus"
+      title="Find the best happenings on campus – from academic workshops to social hangouts."
+      @filter-changed="handleFilters"
+      @show-filter="showFilter"
+    />
+    <div class="no-result" v-if="noEvent">
+      <img src="/no-result.png" alt="" />
+    </div>
+    <div :class="isFilterActive ? 'skeleton open' : 'skeleton'" v-if="loading">
+      <SkeletonLoader v-for="i in 3" :key="i" />
+    </div>
+    <button
+      :class="isFilterActive ? 'back-btn open' : 'back-btn'"
+      v-if="route.query.eventId"
+      @click="backToDiscoverPage"
+    >
+      ← Back to all Event
+    </button>
+    <div class="" v-if="unavailableEvent">Event currently unavailable</div>
+    <div :class="isFilterActive ? 'events-section open' : 'events-section'" v-if="!loading">
+      <EventsCard :events="route.query.eventId ? searchFromId : filter" />
+    </div>
+    <div class="" v-if="emptyEvent">Sorry no event</div>
+    <div
+      :class="isFilterActive ? 'pagination open' : 'pagination'"
+      v-if="univentStore.pageCount > 1 && !route.query.eventId"
+    >
+      <h3>Page {{ univentStore.currentPage }} of {{ univentStore.pageCount }}</h3>
+      <div class="buttons">
+        <button
+          v-for="i in univentStore.pageSum.slice(0, 4)"
+          :key="i"
+          @click="pagination(i)"
+          :class="{ activeFilter: univentStore.currentPage == i }"
+        >
+          {{ i }}
+        </button>
       </div>
-      <div class="skeleton" v-if="loading">
-        <SkeletonLoader v-for="i in 3" :key="i" />
-      </div>
-      <button class="" v-if="route.query.eventId" @click="backToDiscoverPage">
-        ← Back to all Event
-      </button>
-      <div class="" v-if="unavailableEvent">Event currently unavailable</div>
-      <div class="events-section" v-if="!loading">
-        <EventsCard :events="route.query.eventId ? searchFromId : filter" />
-      </div>
-      <div class="" v-if="emptyEvent">Sorry no event</div>
-      <div class="pagination" v-if="univentStore.pageCount > 1 && !route.query.eventId">
-        <h3>Page {{ univentStore.currentPage }} of {{ univentStore.pageCount }}</h3>
-        <div class="buttons">
-          <button
-            v-for="i in univentStore.pageCount"
-            :key="i"
-            @click="pagination(i)"
-            :class="{ activeFilter: univentStore.currentPage == i }"
-          >
-            {{ i }}
-          </button>
-        </div>
 
-        <div class="go-to-page">
-          <p>Go to page</p>
-          <select
-            name="page"
-            id="page"
-            @change="pagination($event.target.value)"
-            v-model="univentStore.currentPage"
-          >
-            <option v-for="i in univentStore.pageCount" :value="i" :key="i">
-              {{ i }}
-            </option>
-          </select>
-        </div>
+      <div class="go-to-page">
+        <p>Go to page</p>
+        <select
+          name="page"
+          id="page"
+          @change="pagination($event.target.value)"
+          v-model="univentStore.currentPage"
+        >
+          <option v-for="i in univentStore.pageCount" :value="i" :key="i">
+            {{ i }}
+          </option>
+        </select>
       </div>
     </div>
+  </div>
+  <div class="mobileNav">
+    <div class="">Home</div>
   </div>
 </template>
 
@@ -158,7 +194,19 @@ watch(
   justify-content: flex-end;
   max-width: 95%;
   width: 100%;
-  /* margin: 30px auto; */
+  transition: all 0.5s ease;
+  transform: translateY(-70px);
+  margin: 30px auto;
+}
+.pagination.open {
+  transform: translateY(0px);
+}
+.back-btn {
+  transition: all 0.5s ease;
+  transform: translateY(-70px);
+}
+.back-btn.open {
+  transform: translateY(0px);
 }
 .pagination h3 {
   font-size: 14px;
@@ -196,6 +244,11 @@ watch(
   margin: 30px auto;
   width: 100%;
   gap: 16px;
+  transition: all 0.5s ease;
+  transform: translateY(-70px);
+}
+.skeleton.open {
+  transform: translateY(0px);
 }
 .no-result {
   width: 347px;
@@ -209,7 +262,36 @@ watch(
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
   max-width: 90%;
+  position: relative;
+  z-index: 0;
   width: 100%;
   margin: 30px auto;
+  transition: all 0.5s ease;
+  transform: translateY(-70px);
+}
+.events-section.open {
+  transform: translateY(0px);
+}
+@media screen and (max-width: 500px) {
+  .events-section {
+    grid-template-columns: 1fr;
+    margin-top: -300px;
+    /* margin-bottom: 350px; */
+  }
+  .pagination {
+    margin-top: 0px;
+  }
+  .skeleton {
+    grid-template-columns: 1fr;
+    margin-top: -300px;
+  }
+  .events-section.open,
+  .skeleton.open {
+    transform: none;
+    margin-top: 0;
+  }
+  .pagination.open {
+    margin-bottom: 100px;
+  }
 }
 </style>

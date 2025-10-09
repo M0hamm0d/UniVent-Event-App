@@ -6,12 +6,15 @@ import LocationIcon from './icons/LocationIcon.vue'
 import OrganizersIcon from './icons/OrganizersIcon.vue'
 import RegisterIcon from './icons/RegisterIcon.vue'
 import ShareIcon from './icons/ShareIcon.vue'
-import ScrollHint from './ScrollHint.vue'
 import dayjs from 'dayjs'
+import CancelBtn from './icons/CancelBtn.vue'
 const emit = defineEmits(['close', 'update-interested', 'share-clicked'])
 let prop = defineProps({
   event: {
     type: Object,
+  },
+  className: {
+    type: String,
   },
 })
 function updateInterested(e) {
@@ -24,76 +27,80 @@ watch(is_interested, (newVal) => {
 </script>
 <template>
   <div class="container" @click="emit('close')">
-    <div class="view-details-wrapper" @click.stop>
-      <div class="header">
-        <div class="title">
-          <h2>{{ event.event_title }}</h2>
-          <div class="category">
-            <div v-for="(cat, i) in event.category" :class="[`category-${i}`]" :key="i">
-              {{ cat }}
+    <div :class="['view-details-wrapper', { open: className }]" @click.stop>
+      <div class="close" @click="emit('close')">
+        <CancelBtn />
+      </div>
+      <div class="view-details">
+        <div class="header">
+          <div class="title">
+            <h2>{{ event.event_title }}</h2>
+            <div class="category">
+              <div v-for="(cat, i) in event.category" :class="[`category-${i}`]" :key="i">
+                {{ cat }}
+              </div>
             </div>
           </div>
+          <div class="event-flier">
+            <img :src="event.image_url" alt="" />
+          </div>
         </div>
-        <div class="event-flier">
-          <img :src="event.image_url" alt="" />
+        <div class="event-overview">
+          <div class="about-event">
+            <h4>About the Event</h4>
+            <p>{{ event.description }}</p>
+          </div>
+          <div class="divider-line"></div>
+          <div class="event-details">
+            <h4>Event Details</h4>
+            <div class="details">
+              <div class="event-meta">
+                <span><CalendarIcon /></span>
+                <span
+                  >{{ dayjs(event.date).format('dddd, MMMM D') }}
+                  {{ event.date.split('').slice(0, 4).join('') }}</span
+                >
+                <span>•</span>
+                <span>{{ event.time }}</span>
+              </div>
+              <div class="event-meta">
+                <span><LocationIcon /></span>
+                <span>{{ event.location }}</span>
+              </div>
+              <div class="event-meta">
+                <span><OrganizersIcon /></span>
+                <span>Computer Science Club</span>
+                <span>•</span>
+                <span>csclub@university.edu</span>
+              </div>
+              <div class="event-meta" v-if="event.price">
+                <span><CardIcon /></span>
+                <span>N{{ event.price }}</span>
+              </div>
+              <div class="event-meta">
+                <span><RegisterIcon /></span>
+                <a href="">Click here to register</a>
+              </div>
+            </div>
+          </div>
+          <div class="divider-line"></div>
+          <div class="interested-share">
+            <div class="interested">
+              <input
+                type="checkbox"
+                name="interested"
+                id=""
+                :checked="prop.event.is_interest"
+                @change="updateInterested"
+              />
+              <p>I'm Interested</p>
+            </div>
+            <button @click="emit('share-clicked')">
+              <ShareIcon />
+            </button>
+          </div>
         </div>
       </div>
-      <div class="event-overview">
-        <div class="about-event">
-          <h4>About the Event</h4>
-          <p>{{ event.description }}</p>
-        </div>
-        <div class="divider-line"></div>
-        <div class="event-details">
-          <h4>Event Details</h4>
-          <div class="details">
-            <div class="event-meta">
-              <span><CalendarIcon /></span>
-              <span
-                >{{ dayjs(event.date).format('dddd, MMMM D') }}
-                {{ event.date.split('').slice(0, 4).join('') }}</span
-              >
-              <span>•</span>
-              <span>{{ event.time }}</span>
-            </div>
-            <div class="event-meta">
-              <span><LocationIcon /></span>
-              <span>{{ event.location }}</span>
-            </div>
-            <div class="event-meta">
-              <span><OrganizersIcon /></span>
-              <span>Computer Science Club</span>
-              <span>•</span>
-              <span>csclub@university.edu</span>
-            </div>
-            <div class="event-meta" v-if="event.price">
-              <span><CardIcon /></span>
-              <span>N{{ event.price }}</span>
-            </div>
-            <div class="event-meta">
-              <span><RegisterIcon /></span>
-              <a href="">Click here to register</a>
-            </div>
-          </div>
-        </div>
-        <div class="divider-line"></div>
-        <div class="interested-share">
-          <div class="interested">
-            <input
-              type="checkbox"
-              name="interested"
-              id=""
-              :checked="prop.event.is_interest"
-              @change="updateInterested"
-            />
-            <p>I'm Interested</p>
-          </div>
-          <button @click="emit('share-clicked')">
-            <ShareIcon />
-          </button>
-        </div>
-      </div>
-      <ScrollHint />
     </div>
   </div>
 </template>
@@ -106,6 +113,7 @@ watch(is_interested, (newVal) => {
   position: fixed;
   display: flex;
   inset: 0 0 0 0;
+  z-index: 50;
   background: rgba(0, 0, 0, 0.1);
 }
 .divider-line {
@@ -123,11 +131,12 @@ h4 {
   max-width: 400px;
   max-height: 80%;
   /* height: 100%; */
+  position: relative;
   width: 450px;
   width: 100%;
   background-color: #fff;
   margin: auto;
-  padding: 30px;
+  padding: 0 30px 30px;
   border-radius: 32px;
   display: flex;
   flex-direction: column;
@@ -135,6 +144,11 @@ h4 {
   overflow-y: auto;
   scrollbar-width: none;
   z-index: 100;
+}
+.close {
+  position: fixed;
+  top: 11%;
+  right: 7%;
 }
 .category {
   display: flex;
@@ -145,6 +159,11 @@ h4 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.view-details {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
 }
 .header {
   gap: 20px;
@@ -180,6 +199,7 @@ h4 {
 }
 .event-flier img {
   width: 100%;
+  height: 260px;
 }
 .event-overview {
   display: flex;

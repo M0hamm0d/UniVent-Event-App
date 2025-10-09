@@ -17,6 +17,7 @@ import OrganizersIcon from './icons/OrganizersIcon.vue'
 import PriceIcon from './icons/PriceIcon.vue'
 import { computed, ref } from 'vue'
 const univentStore = useUniventStore()
+const isFilterActive = ref(false)
 const showCategoryFilter = computed(() => {
   return route.path === '/interested' || route.path === '/discover'
 })
@@ -63,7 +64,7 @@ function pickDateOrPrice(name = '', value = '') {
   filterObject.value[name] = value
   date.value = ''
 }
-const emit = defineEmits(['filter-changed', 'search-performed'])
+const emit = defineEmits(['filter-changed', 'search-performed', 'show-filter'])
 function showFilterDropdown(param) {
   if (param == 'date') {
     univentStore.dateDropdown = !univentStore.dateDropdown
@@ -114,6 +115,7 @@ watch(
         location: newVal?.location.join(',') || undefined,
         date: newVal?.date || undefined,
         price: newVal?.price || undefined,
+        page: univentStore.currentPage,
       },
     })
   },
@@ -136,6 +138,10 @@ watch(
     filterObject.value.searchInput = newVal || ''
   },
 )
+function showFilter() {
+  isFilterActive.value = !isFilterActive.value
+  emit('show-filter')
+}
 
 onMounted(() => {
   univentStore.activeFilters = {
@@ -164,17 +170,25 @@ onMounted(() => {
           <input
             type="text"
             v-model="filterObject.searchInput"
-            @input="emit('search-performed')"
             placeholder="Search events by keyword, organizer, or venue..."
           />
-          <button class="">Search <Search2Icon /></button>
+          <!-- <input
+            type="text"
+            v-model="filterObject.searchInput"
+            @input="emit('search-performed')"
+            placeholder="Search events by keyword, organizer, or venue..."
+          /> -->
+          <button class="search">Search <Search2Icon /></button>
         </div>
       </div>
     </div>
     <div v-if="showCategoryFilter" class="category-filter">
       <div class="">
-        <button class=""><FiltersIcon /> Filter</button>
-        <button class="">
+        <button class="filter" @click="showFilter">
+          <FiltersIcon /> Filter
+          <DropdownIcon :className="isFilterActive ? 'rotateDropdown open' : 'rotateDropdown'" />
+        </button>
+        <button class="sort-by">
           <SortIcon /> Sort by
           <div class="">
             <select id="category" name="category">
@@ -185,7 +199,7 @@ onMounted(() => {
           </div>
         </button>
       </div>
-      <div class="filters-btn">
+      <div :class="isFilterActive ? 'filters-btn active' : 'filters-btn'">
         <div class="category" @click="showFilterDropdown('category')">
           <div class="">
             <span><CategoryIcon /></span>
@@ -400,6 +414,13 @@ h2,
 p {
   margin: 0;
 }
+.rotateDropdown {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+.rotateDropdown.open {
+  transform: rotate(180deg);
+}
 .hero-section {
   max-width: 90%;
   width: 100%;
@@ -408,7 +429,8 @@ p {
 }
 .wrapper {
   background: url('/discorver-hero.webp') no-repeat center/cover;
-  z-index: 10;
+  position: relative;
+  z-index: 20;
 }
 .title {
   display: flex;
@@ -436,6 +458,9 @@ p {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.search {
+  display: flex;
 }
 .search-section input {
   font-family: pp editorial new;
@@ -485,6 +510,19 @@ p {
   justify-content: center;
   gap: 16px;
 }
+
+.category-filter .filters-btn {
+  transform: translateY(-70px);
+  z-index: 1;
+  transition: all 0.5s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+.category-filter .filters-btn.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
+}
 select {
   /* padding: 8px 10px; */
   font-size: 19px;
@@ -532,6 +570,7 @@ option:hover {
 .category ul {
   position: absolute;
   width: 233px;
+  z-index: 2000;
 }
 .category span,
 .reset-filter span {
@@ -566,5 +605,38 @@ ul li {
 }
 ul li:hover {
   background-color: #f4f4f4;
+}
+@media screen and (max-width: 500px) {
+  .search-section .search {
+    display: none;
+  }
+  .title {
+    gap: 20px;
+  }
+  .title h2 {
+    font-size: 32px;
+    text-align: left;
+    line-height: 100%;
+  }
+  .title p {
+    font-size: 15px;
+    text-align: left;
+  }
+  .category-filter button {
+    font-size: 15px;
+    padding: 8px 8px;
+  }
+  .category-filter .sort-by {
+    font-size: 15px;
+  }
+  .category-filter .sort-by select {
+    font-size: 15px;
+  }
+  .filters-btn {
+    margin: 0 15px;
+  }
+  .category-filter > .filters-btn {
+    flex-direction: column;
+  }
 }
 </style>

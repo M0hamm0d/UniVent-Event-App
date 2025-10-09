@@ -321,7 +321,7 @@ textarea {
   outline: none;
   color: #8c8c8b;
   border: 1px solid #dfdfdf;
-  padding: 5px 17px 0;
+  padding: 18px 17px 0;
   font-size: 16px;
 }
 .title p,

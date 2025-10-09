@@ -11,6 +11,10 @@ import DropdownIcon from './components/icons/DropdownIcon.vue'
 import { useToast } from 'vue-toastification'
 import { useAuth } from '@/composables/useAuth'
 import router from './router'
+import HomeBtn from './components/icons/HomeBtn.vue'
+import SearchIcon from './components/icons/SearchIcon.vue'
+import BookmarkIcon from './components/icons/BookmarkIcon.vue'
+import RequestEvent from './components/icons/RequestEvent.vue'
 
 const { fetchProfile } = useUserProfile()
 let univentStore = useUniventStore()
@@ -148,17 +152,82 @@ onMounted(async () => {
               <RouterLink to="/settings" @click="showDropdown = !showDropdown">
                 <div>Settings</div>
               </RouterLink>
-              <div @click="handleLogout">Logout</div>
+              <div @click="handleLogout">Log out</div>
             </div>
           </div>
         </div>
       </div>
       <RouterView />
+      <div class="mobileNav">
+        <RouterLink to="/">
+          <div class="">
+            <HomeBtn />
+            <p>Home</p>
+          </div>
+        </RouterLink>
+        <RouterLink to="/discover">
+          <div class="">
+            <SearchIcon />
+            <p>Discover Events</p>
+          </div>
+        </RouterLink>
+        <RouterLink to="/interested">
+          <div class="">
+            <BookmarkIcon />
+            <p>My Interest</p>
+          </div>
+        </RouterLink>
+        <RouterLink to="/add-event">
+          <div class="">
+            <RequestEvent />
+            <p>Request Event</p>
+          </div>
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.mobileNav {
+  display: none;
+}
+@media (max-width: 500px) {
+  .mobileNav {
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    position: fixed;
+    border-radius: 10px 10px 0 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow:
+      0 2px 14px 4px rgba(0, 0, 0, 0.05),
+      0 12px 24px -2px rgba(0, 0, 0, 0.08);
+  }
+  .mobileNav div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-items: center; */
+    gap: 4px;
+  }
+  .mobileNav div svg {
+    width: 21px;
+    height: 21px;
+    /* fill: #0b99ff;
+    color: #0b99ff; */
+  }
+  .mobileNav p {
+    margin: 0px;
+    font-size: 12px;
+  }
+}
 .authenticated {
   display: inline-block;
   align-items: center;

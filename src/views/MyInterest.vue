@@ -20,6 +20,7 @@ function handleDelete(event) {
   deleteInterest(event)
 }
 const res = ref([])
+const isFilterActive = ref(false)
 watch(active, async () => {
   univentStore.interestFilters = {
     ...univentStore.interestFilters,
@@ -43,6 +44,9 @@ async function handleFilters(e) {
   for (let i = 0; i < result.value.pageSum; i++) {
     pageSum.value.push(i + 1)
   }
+}
+function showFilter() {
+  isFilterActive.value = !isFilterActive.value
 }
 onMounted(async () => {
   univentStore.dateDropdown = false
@@ -86,56 +90,72 @@ watch(
       header="Interested Events"
       title="Keep track of all the events you’ve marked interest in."
       @filter-changed="handleFilters"
+      @show-filter="showFilter"
     />
 
-    <div class="upcoming-past">
-      <button
-        :class="['upcoming-event', { upcomingActive: active === 'upcoming' }]"
-        @click="active = 'upcoming'"
-      >
-        Upcoming Events
-      </button>
-      <button
-        :class="['past-event', { upcomingActive: active === 'past' }]"
-        @click="active = 'past'"
-      >
-        Past Events
-      </button>
-    </div>
-
-    <div class="upcoming-events-container">
-      <div class="" v-if="!res.length >= 1 && !loading">No Interested Events</div>
-      <EventsCard :events="res" v-if="res.length >= 1 && !loading" @deleteEvent="handleDelete" />
-      <div class="" v-if="loading">
-        <SkeletonLoader />
-      </div>
-    </div>
-    <p>{{ filtersArray }}</p>
-    <div class="pagination" v-if="result?.pageSum > 1">
-      <h3>Page {{ result?.currentPage }} of {{ result?.pageSum }}</h3>
-      <div class="buttons">
+    <div :class="isFilterActive ? 'interest-container open' : 'interest-container'">
+      <div class="upcoming-past">
         <button
-          v-for="(data, i) in pageSum.slice(0, 3)"
-          :key="i"
-          @click="pagination(i + 1)"
-          :class="{ activeNav: result.currentPage === i + 1 }"
+          :class="['upcoming-event', { upcomingActive: active === 'upcoming' }]"
+          @click="active = 'upcoming'"
         >
-          {{ i + 1 }}
+          Upcoming Events
         </button>
-        <select
-          name=""
-          id=""
-          v-model="result.currentPage"
-          @change="pagination($event.target.value)"
+        <button
+          :class="['past-event', { upcomingActive: active === 'past' }]"
+          @click="active = 'past'"
         >
-          <option :value="i" v-for="i in result.pageSum" :key="i">{{ i }}</option>
-        </select>
+          Past Events
+        </button>
+      </div>
+
+      <div class="upcoming-events-container">
+        <div class="" v-if="!res.length >= 1 && !loading">No Interested Events</div>
+        <EventsCard
+          :events="res"
+          v-if="res.length >= 1 && !loading"
+          @deleteEvent="handleDelete"
+          @show-filter="showFilter"
+        />
+        <div class="skeleton" v-if="loading">
+          <SkeletonLoader />
+        </div>
+      </div>
+      <p>{{ filtersArray }}</p>
+      <div class="pagination" v-if="result?.pageSum > 1">
+        <h3>Page {{ result?.currentPage }} of {{ result?.pageSum }}</h3>
+        <div class="buttons">
+          <button
+            v-for="(data, i) in pageSum.slice(0, 3)"
+            :key="i"
+            @click="pagination(i + 1)"
+            :class="{ activeNav: result.currentPage === i + 1 }"
+          >
+            {{ i + 1 }}
+          </button>
+          <p>Go to page</p>
+          <select
+            name=""
+            id=""
+            v-model="result.currentPage"
+            @change="pagination($event.target.value)"
+          >
+            <option :value="i" v-for="i in result.pageSum" :key="i">{{ i }}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.interest-container {
+  transition: all 0.5s ease;
+  transform: translateY(-70px);
+}
+.interest-container.open {
+  transform: translateY(0px);
+}
 .pagination {
   display: flex;
   align-items: center;
@@ -152,7 +172,13 @@ watch(
 }
 .pagination .buttons {
   display: flex;
+  align-items: center;
   gap: 4px;
+}
+.pagination .buttons p {
+  margin: 0 5px;
+  font-size: 14px;
+  color: #aaa;
 }
 .interested-events {
   display: flex;
@@ -198,5 +224,23 @@ watch(
 .upcoming-past .upcomingActive {
   border-bottom: 2px solid #1969fe;
   background: #f4f4f4;
+}
+@media screen and (max-width: 500px) {
+  .interest-container {
+    margin-top: -330px;
+  }
+  .upcoming-events-container {
+    grid-template-columns: 1fr;
+  }
+  .pagination {
+    justify-content: space-between;
+    margin: 30px auto;
+    max-width: 90%;
+  }
+  .interest-container.open {
+    transform: 0;
+    margin-top: 0px;
+    margin-bottom: 80px;
+  }
 }
 </style>
