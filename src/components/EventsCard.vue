@@ -104,14 +104,17 @@ watch(
         <div class="view-details" @click="selectedEvent = event">
           <p>View Details</p>
           <teleport to="body">
-            <ViewDetailsModal
-              v-if="selectedEvent"
-              :event="selectedEvent"
-              @close="selectedEvent = null"
-              @update-interested="updateInterested"
-              @share-clicked="univentStore.shareEvent(event?.id)"
-              @click.stop
-            />
+            <Transition name="modal-fade">
+              <ViewDetailsModal
+                v-if="selectedEvent"
+                :event="selectedEvent"
+                class-name="open"
+                @close="selectedEvent = null"
+                @update-interested="updateInterested"
+                @share-clicked="univentStore.shareEvent(event?.id)"
+                @click.stop
+              />
+            </Transition>
           </teleport>
         </div>
 
@@ -274,6 +277,15 @@ h3 {
   background: rgba(0, 0, 0, 0.1);
   height: 100%;
   z-index: 3;
+}
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: all 0.4s ease;
+}
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+  transform: translateY(500px);
 }
 .interest.interested {
   background-color: #1969fe;

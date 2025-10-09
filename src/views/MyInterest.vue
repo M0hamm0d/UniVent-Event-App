@@ -133,6 +133,7 @@ watch(
           >
             {{ i + 1 }}
           </button>
+          <p>Go to page</p>
           <select
             name=""
             id=""
@@ -171,7 +172,13 @@ watch(
 }
 .pagination .buttons {
   display: flex;
+  align-items: center;
   gap: 4px;
+}
+.pagination .buttons p {
+  margin: 0 5px;
+  font-size: 14px;
+  color: #aaa;
 }
 .interested-events {
   display: flex;
@@ -217,5 +224,23 @@ watch(
 .upcoming-past .upcomingActive {
   border-bottom: 2px solid #1969fe;
   background: #f4f4f4;
+}
+@media screen and (max-width: 500px) {
+  .interest-container {
+    margin-top: -330px;
+  }
+  .upcoming-events-container {
+    grid-template-columns: 1fr;
+  }
+  .pagination {
+    justify-content: space-between;
+    margin: 30px auto;
+    max-width: 90%;
+  }
+  .interest-container.open {
+    transform: 0;
+    margin-top: 0px;
+    margin-bottom: 80px;
+  }
 }
 </style>

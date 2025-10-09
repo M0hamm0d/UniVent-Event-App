@@ -676,6 +676,9 @@ const categories = [
   .process > div h4 {
     font-size: 16px;
   }
+  .skeleton {
+    grid-template-columns: 1fr;
+  }
   .hero-content {
     gap: 20px;
   }

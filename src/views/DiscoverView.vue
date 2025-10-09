@@ -275,13 +275,23 @@ function showFilter() {
 @media screen and (max-width: 500px) {
   .events-section {
     grid-template-columns: 1fr;
-    transform: translateY(-370px);
+    margin-top: -300px;
+    /* margin-bottom: 350px; */
   }
   .pagination {
-    transform: translateY(-370px);
+    margin-top: 0px;
   }
   .skeleton {
     grid-template-columns: 1fr;
+    margin-top: -300px;
+  }
+  .events-section.open,
+  .skeleton.open {
+    transform: none;
+    margin-top: 0;
+  }
+  .pagination.open {
+    margin-bottom: 100px;
   }
 }
 </style>
