@@ -398,4 +398,26 @@ textarea {
   border-radius: 7px;
   align-items: center;
 }
+@media screen and (max-width: 500px) {
+  .nav h2 {
+    margin: 0;
+  }
+  .date {
+    display: flex;
+  }
+  .time {
+    display: flex;
+  }
+  .time input {
+    display: flex;
+    width: auto;
+  }
+  .date-time {
+    flex-direction: column;
+    width: 100%;
+  }
+  .categoryContainer {
+    overflow: auto;
+  }
+}
 </style>

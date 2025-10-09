@@ -146,9 +146,7 @@ h4 {
   z-index: 100;
 }
 .close {
-  position: fixed;
-  top: 11%;
-  right: 7%;
+  display: none;
 }
 .category {
   display: flex;
@@ -254,5 +252,13 @@ h4 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@media screen and (max-width: 500px) {
+  .close {
+    display: flex;
+    position: fixed;
+    top: 11%;
+    right: 7%;
+  }
 }
 </style>

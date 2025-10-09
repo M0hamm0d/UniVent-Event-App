@@ -103,4 +103,24 @@ const active = ref('account')
 .activeNav {
   color: #000;
 }
+@media screen and (max-width: 500px) {
+  .content {
+    flex-direction: column;
+    margin-bottom: 110px;
+  }
+  .side-nav {
+    flex-direction: row;
+    gap: 15px;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-left: 0px;
+  }
+  .side-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .active {
+    left: 0;
+  }
+}
 </style>

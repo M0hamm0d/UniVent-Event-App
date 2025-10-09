@@ -1,5 +1,5 @@
 <script setup>
-import { ref, toRaw, watch } from 'vue'
+import { ref, watch } from 'vue'
 import dayjs from 'dayjs'
 import { useInterestedEvents } from '@/composables/useInterestedEvents'
 import { useRoute, useRouter } from 'vue-router'
@@ -245,7 +245,7 @@ h3 {
   background-color: transparent;
   border: 1px solid #eaeaea;
   border-radius: 64px;
-  padding: 16px 0;
+  padding: 16px 5px;
   font-size: 19px;
   font-weight: 600;
   text-align: center;
@@ -259,6 +259,11 @@ h3 {
   padding: 16px;
   border-radius: 64px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.view-details {
+  transition: all 0.5s;
 }
 .view-details > p {
   width: 100%;
@@ -291,8 +296,10 @@ h3 {
   background-color: #1969fe;
   color: #fff;
 }
-.view-details p:hover {
+.view-details:hover {
   background-color: #1969fe;
+}
+.view-details:hover > p {
   color: #fff;
 }
 .interest {

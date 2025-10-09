@@ -207,6 +207,9 @@ form div textarea {
   border-radius: 10px;
   outline: none;
 }
+textarea {
+  resize: none;
+}
 .describe-issue {
   position: relative;
 }
@@ -314,5 +317,14 @@ form div input:focus {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+@media screen and (max-width: 500px) {
+  .save-changes,
+  .clear-form {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>
