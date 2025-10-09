@@ -1,11 +1,12 @@
 <script setup>
-import GoogleLogo from './icons/GoogleLogo.vue'
+// import GoogleLogo from './icons/GoogleLogo.vue'
 import UniventAuthLogo from './icons/UniventAuthLogo.vue'
 import { useUniventStore } from '../stores/counter'
 import { ref } from 'vue'
-import ScrollHint from './ScrollHint.vue'
 import { useAuth } from '@/composables/useAuth'
+import CancelBtn from './icons/CancelBtn.vue'
 const login = useUniventStore()
+const emit = defineEmits(['closeBtn'])
 function openLoginModal() {
   login.loginModal = true
   login.signupModal = false
@@ -36,6 +37,7 @@ async function handleSignUp() {
 
 <template>
   <div class="view-details-wrapper" @click.stop>
+    <div class="close-btn" @click="emit('closeBtn')"><CancelBtn /></div>
     <div class="univentLogo">
       <UniventAuthLogo />
     </div>
@@ -85,12 +87,12 @@ async function handleSignUp() {
       <button @click="handleSignUp">
         {{ loading ? 'Creating account...' : 'Create Account' }}
       </button>
-      <div class="or-continue-with">
+      <!-- <div class="or-continue-with">
         <div class=""></div>
         <p>or continue with</p>
         <div class=""></div>
       </div>
-      <button class="Oauth"><GoogleLogo /> <span>Google</span></button>
+      <button class="Oauth"><GoogleLogo /> <span>Google</span></button> -->
     </div>
     <div class="have-an-account">
       Already have an account? <span @click="openLoginModal"> Login</span>
@@ -99,7 +101,6 @@ async function handleSignUp() {
       By signing up, you agree to UniVent’s <span>Privacy Policy</span> and
       <span>Terms of Service</span>
     </p>
-    <ScrollHint />
   </div>
 </template>
 <style scoped>
@@ -111,6 +112,9 @@ h4 {
 }
 .error {
   color: red;
+}
+.close-btn {
+  display: none;
 }
 .view-details-wrapper {
   max-width: 90%;
@@ -255,5 +259,17 @@ h4 {
   text-decoration: underline;
   font-weight: 600;
   cursor: pointer;
+}
+@media screen and (max-width: 500px) {
+  .view-details-wrapper {
+    padding: 30px 30px 70px;
+    height: 75%;
+  }
+  .close-btn {
+    display: flex;
+    position: fixed;
+    top: 10%;
+    right: 7%;
+  }
 }
 </style>

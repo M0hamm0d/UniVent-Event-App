@@ -1,13 +1,14 @@
 <script setup>
-import GoogleLogo from './icons/GoogleLogo.vue'
+// import GoogleLogo from './icons/GoogleLogo.vue'
 import UniventAuthLogo from './icons/UniventAuthLogo.vue'
 import { useUniventStore } from '../stores/counter'
 import { useToast } from 'vue-toastification'
 // import { supabase } from '@/supabase'
 import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
-import ScrollHint from './ScrollHint.vue'
 import router from '@/router'
+import CancelBtn from './icons/CancelBtn.vue'
+const emit = defineEmits(['closeBtn'])
 let toast = useToast()
 const error = ref('')
 const login = useUniventStore()
@@ -54,6 +55,7 @@ async function handleLogin() {
 </script>
 
 <template>
+  <div class="closeBtn" @click="emit('closeBtn')"><CancelBtn /></div>
   <div class="view-details-wrapper scroll-hint" @click.stop>
     <div class="univentLogo">
       <UniventAuthLogo />
@@ -88,12 +90,12 @@ async function handleLogin() {
       >
         {{ isLoading ? 'Signing In....' : 'Log in' }}
       </button>
-      <div class="or-continue-with">
+      <!-- <div class="or-continue-with">
         <div class=""></div>
         <p>or Login with</p>
         <div class=""></div>
       </div>
-      <button class="Oauth"><GoogleLogo /> <span>Google</span></button>
+      <button class="Oauth"><GoogleLogo /> <span>Google</span></button> -->
     </div>
     <div class="have-an-account">
       Don't have an account?
@@ -103,7 +105,6 @@ async function handleLogin() {
       By signing up, you agree to UniVent’s <span>Privacy Policy</span> and
       <span>Terms of Service</span>
     </p>
-    <ScrollHint />
   </div>
 </template>
 <style scoped>
@@ -116,7 +117,7 @@ h4 {
 .view-details-wrapper {
   max-width: 90%;
   max-height: 90%;
-  height: 80%;
+  height: 73%;
   /* max-width: 717px; */
   width: 450px;
   background-color: #fff;
@@ -129,7 +130,7 @@ h4 {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  z-index: 100;
+  /* z-index: 100; */
 }
 .view-details-wrapper::-webkit-scrollbar {
   display: none;
@@ -258,5 +259,19 @@ h4 {
   text-decoration: underline;
   font-weight: 600;
   cursor: pointer;
+}
+.closeBtn {
+  display: none;
+}
+@media screen and (max-width: 500px) {
+  .view-details-wrapper {
+    padding-bottom: 80px;
+  }
+  .closeBtn {
+    display: flex;
+    position: fixed;
+    top: 10%;
+    right: 7%;
+  }
 }
 </style>

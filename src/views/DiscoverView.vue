@@ -181,9 +181,6 @@ function showFilter() {
       </div>
     </div>
   </div>
-  <div class="mobileNav">
-    <div class="">Home</div>
-  </div>
 </template>
 
 <style scoped>

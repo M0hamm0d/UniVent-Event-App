@@ -113,4 +113,9 @@ p {
 .isOpen {
   display: flex;
 }
+@media screen and (max-width: 500px) {
+  .faq {
+    width: auto;
+  }
+}
 </style>

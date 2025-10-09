@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { supabase } from '@/supabase'
 import { useUserProfile } from '@/composables/useUserProfile'
 import ViewDetailsModal from './components/ViewDetailsModal.vue'
@@ -15,7 +15,8 @@ import HomeBtn from './components/icons/HomeBtn.vue'
 import SearchIcon from './components/icons/SearchIcon.vue'
 import BookmarkIcon from './components/icons/BookmarkIcon.vue'
 import RequestEvent from './components/icons/RequestEvent.vue'
-
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const { fetchProfile } = useUserProfile()
 let univentStore = useUniventStore()
 const showDropdown = ref(false)
@@ -58,6 +59,20 @@ function guardRoute(param) {
   }
 }
 
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath === '/' || newPath === '/discover') {
+      activeNav.value = ''
+    } else if (newPath.includes('add-event')) {
+      activeNav.value = 'add-event'
+    } else if (newPath.includes('interested')) {
+      activeNav.value = 'interested'
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   const session = await fetchSession()
   univentStore.isAuthenticated = !!session?.user
@@ -79,20 +94,24 @@ onMounted(async () => {
       >
         <ViewDetailsModal />
       </div>
-      <div
-        class="viewLoginModal"
-        v-if="univentStore.signupModal"
-        @click="univentStore.signupModal = !univentStore.signupModal"
-      >
-        <SignUpModal />
-      </div>
-      <div
-        class="viewLoginModal"
-        v-if="univentStore.loginModal"
-        @click="univentStore.loginModal = false"
-      >
-        <LoginModal />
-      </div>
+      <Transition name="close-login-modal">
+        <div
+          class="viewLoginModal"
+          v-if="univentStore.signupModal"
+          @click="univentStore.signupModal = !univentStore.signupModal"
+        >
+          <SignUpModal @close-btn="univentStore.signupModal = !univentStore.signupModal" />
+        </div>
+      </Transition>
+      <Transition name="close-login-modal">
+        <div
+          class="viewLoginModal"
+          v-if="univentStore.loginModal"
+          @click="univentStore.loginModal = false"
+        >
+          <LoginModal @close-btn="univentStore.loginModal = false" />
+        </div>
+      </Transition>
       <div class="header">
         <RouterLink to="/">
           <div class="home-logo" @click="activeNav = ''">
@@ -171,18 +190,14 @@ onMounted(async () => {
             <p>Discover Events</p>
           </div>
         </RouterLink>
-        <RouterLink to="/interested">
-          <div class="">
-            <BookmarkIcon />
-            <p>My Interest</p>
-          </div>
-        </RouterLink>
-        <RouterLink to="/add-event">
-          <div class="">
-            <RequestEvent />
-            <p>Request Event</p>
-          </div>
-        </RouterLink>
+        <div @click="guardRoute('interested')" :class="{ activeRoute: activeNav == 'interested' }">
+          <BookmarkIcon />
+          <p>My Interest</p>
+        </div>
+        <div @click="guardRoute('add-event')" :class="{ activeRoute: activeNav == 'add-event' }">
+          <RequestEvent />
+          <p>Request Event</p>
+        </div>
       </div>
     </div>
   </div>
@@ -192,41 +207,8 @@ onMounted(async () => {
 .mobileNav {
   display: none;
 }
-@media (max-width: 500px) {
-  .mobileNav {
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px;
-    position: fixed;
-    border-radius: 10px 10px 0 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background-color: #fff;
-    box-shadow:
-      0 2px 14px 4px rgba(0, 0, 0, 0.05),
-      0 12px 24px -2px rgba(0, 0, 0, 0.08);
-  }
-  .mobileNav div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* justify-items: center; */
-    gap: 4px;
-  }
-  .mobileNav div svg {
-    width: 21px;
-    height: 21px;
-    /* fill: #0b99ff;
-    color: #0b99ff; */
-  }
-  .mobileNav p {
-    margin: 0px;
-    font-size: 12px;
-  }
+.header {
+  z-index: 100;
 }
 .authenticated {
   display: inline-block;
@@ -292,6 +274,15 @@ onMounted(async () => {
   align-items: center;
   display: flex;
 }
+.close-login-modal-enter-active,
+.close-login-modal-leave-active {
+  transition: all 0.4s ease;
+}
+.close-login-modal-enter-from,
+.close-login-modal-leave-to {
+  opacity: 0;
+  transform: translateY(500px);
+}
 .login-modal > div {
   display: flex;
   /* overflow: auto; */
@@ -327,7 +318,7 @@ onMounted(async () => {
   background-color: rgba(0, 0, 0, 0.7);
   width: 100%;
   height: 100%;
-  z-index: 10;
+  z-index: 101;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -365,6 +356,7 @@ onMounted(async () => {
 .login {
   padding: 16px 20px;
   border: none;
+  display: flex;
   border-radius: 32px;
   outline: none;
   background: #eaeaea;
@@ -481,6 +473,9 @@ a:hover {
   color: #1969fe;
   text-decoration: underline;
 }
+.activeRoute {
+  color: #1969fe;
+}
 .router-link-active > li:hover {
   color: #1969fe;
   text-decoration: underline;
@@ -534,8 +529,45 @@ a:hover {
   width: 100%;
   border: none;
 }
-@media screen and (max-width: 500px) {
+@media (max-width: 500px) {
   .home-nav {
+    display: none;
+  }
+  .mobileNav {
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    position: fixed;
+    border-radius: 10px 10px 0 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow:
+      0 2px 14px 4px rgba(0, 0, 0, 0.05),
+      0 12px 24px -2px rgba(0, 0, 0, 0.08);
+  }
+  .mobileNav div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-items: center; */
+    gap: 4px;
+  }
+  .mobileNav div svg {
+    width: 21px;
+    height: 21px;
+    /* fill: #0b99ff;
+    color: #0b99ff; */
+  }
+  .mobileNav p {
+    margin: 0px;
+    font-size: 12px;
+  }
+  .login {
     display: none;
   }
 }
