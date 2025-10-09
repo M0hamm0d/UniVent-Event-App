@@ -260,5 +260,8 @@ h4 {
     top: 11%;
     right: 7%;
   }
+  .view-details-wrapper {
+    padding-bottom: 60px;
+  }
 }
 </style>

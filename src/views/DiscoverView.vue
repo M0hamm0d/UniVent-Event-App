@@ -200,7 +200,7 @@ function showFilter() {
 }
 .back-btn {
   transition: all 0.5s ease;
-  transform: translateY(-70px);
+  transform: translateY(-380px);
 }
 .back-btn.open {
   transform: translateY(0px);
