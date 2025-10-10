@@ -61,14 +61,26 @@ async function handleSaveEvent() {
     toast.error(`Missing: ${missing.join(', ')}`)
     return
   }
-
-  if (!/^\d{2}:\d{2}\s?(AM|PM)$/i.test(eventData.value.time)) {
-    errorMessage.value = 'Invalid time format. Use HH:MM AM/PM'
-    setTimeout(() => {
-      errorMessage.value = ''
-    }, 4000)
-    return
+  // if (!/^\d{2}:\d{2}\s?(AM|PM)$/i.test(eventData.value.time)) {
+  //   errorMessage.value = 'Invalid time format. Use HH:MM AM/PM'
+  //   setTimeout(() => {
+  //     errorMessage.value = ''
+  //   }, 4000)
+  //   return
+  // }
+  if (eventData.value.time) {
+    const [hour, min] = eventData.value.time.split(':')
+    if (hour > 12) {
+      eventData.value.time = `${hour - 12}:${min}PM`
+    } else if (hour == 12) {
+      eventData.value.time = `${hour}:${min}PM`
+    } else if (hour == 0) {
+      eventData.value.time = `${12}:${min}AM`
+    } else {
+      eventData.value.time = `${hour}:${min}AM`
+    }
   }
+
   if (eventData.value.isPaid) {
     if (!/^\d+$/.test(eventData.value.price)) {
       errorMessage.value = 'Invalid price format'
@@ -134,9 +146,9 @@ function resetForm() {
           <input v-model="eventData.date" type="date" placeholder=" " />
         </div>
         <div class="time">
-          <input v-model="eventData.time" type="text" placeholder=" " />
+          <input v-model="eventData.time" type="time" placeholder=" " />
           <p>Time</p>
-          <div class="condition">* Use the format HH:MM AM/PM</div>
+          <!-- <div class="condition">* Use the format HH:MM AM/PM</div> -->
         </div>
       </div>
 
@@ -279,6 +291,7 @@ img {
 }
 textarea {
   outline: none;
+  resize: none;
 }
 .nav {
   display: flex;
@@ -361,6 +374,9 @@ textarea {
 .time {
   flex: 1;
   width: 100%;
+}
+.time input {
+  width: auto;
 }
 .time {
   flex-direction: column;
