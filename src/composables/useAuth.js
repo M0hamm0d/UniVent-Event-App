@@ -16,7 +16,7 @@ export function useAuth(toast) {
   function showError(error) {
     errorMessage.value = error
     setTimeout(() => {
-      error.value = ''
+      errorMessage.value = ''
     }, 3000)
   }
   async function signupBtn(name, email, password, confirmPassword) {

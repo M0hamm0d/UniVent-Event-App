@@ -22,16 +22,19 @@ const loading = ref(false)
 
 async function handleSignUp() {
   loading.value = true
-  const { success } = await signupBtn(
-    signupName.value,
-    signupEmail.value,
-    signupPassword.value,
-    signupConfirmPassword.value,
-  )
-  if (!success) {
-    alert('signUp failed')
+  try {
+    const { success } = await signupBtn(
+      signupName.value,
+      signupEmail.value,
+      signupPassword.value,
+      signupConfirmPassword.value,
+    )
+    if (!success) {
+      alert('signUp failed')
+    }
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 </script>
 
@@ -95,7 +98,7 @@ async function handleSignUp() {
       <button class="Oauth"><GoogleLogo /> <span>Google</span></button> -->
     </div>
     <div class="have-an-account">
-      Already have an account? <span @click="openLoginModal"> Login</span>
+      Already have an account? <span @click="openLoginModal">Login</span>
     </div>
     <p class="privacy-policy">
       By signing up, you agree to UniVent’s <span>Privacy Policy</span> and
@@ -259,6 +262,7 @@ h4 {
   text-decoration: underline;
   font-weight: 600;
   cursor: pointer;
+  margin: 0 4px;
 }
 @media screen and (max-width: 500px) {
   .view-details-wrapper {
