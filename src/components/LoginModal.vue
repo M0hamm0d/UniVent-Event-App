@@ -27,8 +27,10 @@ async function handleLogin() {
 
   if (!success) {
     error.value = signInError
+    setTimeout(() => {
+      error.value = ''
+    }, 4000)
   }
-
   isLoading.value = false
 }
 // async function signIn() {
@@ -78,7 +80,7 @@ async function handleLogin() {
           v-model="password"
         />
       </div>
-      <p v-if="error">{{ error }}</p>
+      <p v-if="error" class="error">{{ error }}</p>
     </div>
     <div class="create-account-section">
       <button
@@ -113,6 +115,9 @@ h1,
 h2,
 h4 {
   margin: 0;
+}
+.error {
+  color: red;
 }
 .view-details-wrapper {
   max-width: 90%;
