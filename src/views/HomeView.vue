@@ -39,12 +39,33 @@ const vAnimateOnScroll = {
   },
 }
 const univentStore = useUniventStore()
+function guardRoute(param) {
+  if (param == 'add-event') {
+    if (univentStore.isAuthenticated) {
+      router.push('/add-event')
+    } else {
+      univentStore.loginModal = true
+    }
+  }
+  if (param == 'interested') {
+    if (univentStore.isAuthenticated) {
+      router.push('/interested')
+    } else {
+      univentStore.loginModal = true
+    }
+  }
+}
+
 function pushToSubmitOrSignup(i) {
   if (i == 1) {
     univentStore.signupModal = !univentStore.signupModal
   }
   if (i === 0) {
-    router.push('/add-event')
+    if (univentStore.isAuthenticated) {
+      router.push('/add-event')
+    } else {
+      univentStore.loginModal = true
+    }
   }
 }
 const cards = [
@@ -124,9 +145,10 @@ const categories = [
                 <span><ArrowUp /></span>
               </button>
             </RouterLink>
-            <RouterLink to="/add-event">
+            <button class="hero-post-btn" @click="guardRoute('add-event')">Post Your Event</button>
+            <!-- <RouterLink to="/add-event">
               <button class="hero-post-btn">Post Your Event</button>
-            </RouterLink>
+            </RouterLink> -->
           </div>
         </div>
         <div v-animate-on-scroll="'hero-image'">
@@ -238,6 +260,7 @@ const categories = [
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  margin-bottom: 70px;
 }
 .skeleton {
   display: grid;
@@ -296,6 +319,10 @@ const categories = [
   align-items: center;
   gap: 8px;
 }
+/* .hero-content div > button {
+  width: 100%;
+  flex: 1;
+} */
 .hero-explore-btn {
   padding: 16px;
   display: flex;
@@ -752,8 +779,15 @@ const categories = [
     padding: 14px 20px;
     font-size: 14px;
   }
-  .hero-content div a {
+  .hero-content div a,
+  .hero-content div > button {
     width: 100%;
+    display: flex;
+    flex: 1;
+  }
+  .hero-content div > button {
+    flex: 0.8;
+    font-size: 15px;
   }
 }
 </style>

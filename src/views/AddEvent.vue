@@ -435,5 +435,9 @@ textarea {
   .categoryContainer {
     overflow: auto;
   }
+  .save-cancel-btn {
+    margin-bottom: 120px;
+    width: 100%;
+  }
 }
 </style>
