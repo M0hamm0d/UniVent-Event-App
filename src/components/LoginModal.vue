@@ -264,6 +264,7 @@ h4 {
   text-decoration: underline;
   font-weight: 600;
   cursor: pointer;
+  margin: 0 5px;
 }
 .closeBtn {
   display: none;

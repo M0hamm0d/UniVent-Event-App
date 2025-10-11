@@ -12,6 +12,7 @@ import { onMounted, ref } from 'vue'
 import { useProfile } from '@/composables/useProfile'
 import { useUniventStore } from '@/stores/counter'
 import CautionIcon from './icons/CautionIcon.vue'
+import ProfileIcon from './icons/ProfileIcon.vue'
 
 const toast = useToast()
 const univentStore = useUniventStore()
