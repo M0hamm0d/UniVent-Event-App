@@ -1,35 +1,35 @@
-# univent-app
+# UniVent
 
-This template should help get you started developing with Vue 3 in Vite.
+UniVent is a modern web platform that helps university students discover, share, and attend events happening on their campuses.  
+It provides a unified space for clubs, departments, and student organizations to post and manage events, while users can explore, bookmark, and stay updated in real time.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features
 
-## Customize configuration
+- Browse upcoming and past campus events  
+- Filter events by category, date, or organizer  
+- View detailed event pages with time, venue, and description  
+- Responsive design for desktop and mobile  
+- Real-time data updates  
+- Search bar for quick event discovery  
+- Admin dashboard for event management (create, edit, delete)  
+- Login and registration system (optional future feature)  
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## Tech Stack
 
-```sh
-npm install
-```
+- **Frontend:** Vue 3 (Composition API)  
+- **Database / Backend:**  Supabase  
+- **Hosting:** Vercel  
 
-### Compile and Hot-Reload for Development
+---
 
-```sh
-npm run dev
-```
+## ⚙️ Setup Instructions
 
-### Compile and Minify for Production
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/univent.git
+   cd univent
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
