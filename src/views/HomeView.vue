@@ -99,7 +99,6 @@ const fetchSession = async () => {
 const eventValue = ref([])
 
 onMounted(async () => {
-  //fetchevent here
   const result = await fetchRequestedAndEvents()
   const session = await fetchSession()
   univentStore.isAuthenticated = !!session?.user
@@ -146,9 +145,6 @@ const categories = [
               </button>
             </RouterLink>
             <button class="hero-post-btn" @click="guardRoute('add-event')">Post Your Event</button>
-            <!-- <RouterLink to="/add-event">
-              <button class="hero-post-btn">Post Your Event</button>
-            </RouterLink> -->
           </div>
         </div>
         <div v-animate-on-scroll="'hero-image'">
