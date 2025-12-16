@@ -16,6 +16,7 @@ import SearchIcon from './components/icons/SearchIcon.vue'
 import BookmarkIcon from './components/icons/BookmarkIcon.vue'
 import RequestEvent from './components/icons/RequestEvent.vue'
 import { useRoute } from 'vue-router'
+import UniventAssistance from './components/UniventAssistance.vue'
 const route = useRoute()
 const { fetchProfile } = useUserProfile()
 let univentStore = useUniventStore()
@@ -200,6 +201,9 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <div class="univent-assistance">
+      <UniventAssistance />
+    </div>
   </div>
 </template>
 
@@ -299,6 +303,12 @@ onMounted(async () => {
   overflow-x: hidden;
   overflow-y: auto;
   /* background: url(/discorver-hero.webp) no-repeat center / cover; */
+}
+.univent-assistance {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  z-index: 100;
 }
 .app {
   display: flex;
