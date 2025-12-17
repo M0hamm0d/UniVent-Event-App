@@ -1,27 +1,61 @@
+<script setup lang="ts">
+// import RobotIcon from './icons/RobotIcon.vue'
+</script>
+
 <template>
-  <div class="text">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      height="28px"
-      viewBox="0 -960 960 960"
-      width="28px"
-      fill="#fff"
-    >
-      <path
-        d="M200-120q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120H200Zm0-80h560v-400q0-66-47-113t-113-47H360q-66 0-113 47t-47 113v400Zm160-280q-33 0-56.5-23.5T280-560q0-33 23.5-56.5T360-640q33 0 56.5 23.5T440-560q0 33-23.5 56.5T360-480Zm240 0q-33 0-56.5-23.5T520-560q0-33 23.5-56.5T600-640q33 0 56.5 23.5T680-560q0 33-23.5 56.5T600-480ZM280-200v-80q0-33 23.5-56.5T360-360h240q33 0 56.5 23.5T680-280v80h-80v-80h-80v80h-80v-80h-80v80h-80Zm-80 0h560-560Z"
-      />
-    </svg>
+  <div class="univent-assistance-body">
+    <div class="text">
+      <!-- <RobotIcon /> -->
+      🤖
+    </div>
+    <div class="chat-box">
+      <div class="input">
+        <input type="text" placeholder="What is happening tonight in university?" />
+      </div>
+    </div>
   </div>
 </template>
 <style scoped>
+.univent-assistance-body {
+  position: relative;
+}
 .text {
   /* background-color: darkcyan; */
   background-color: #1969fe;
-  padding: 20px;
+  padding: 10px;
   border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  width: fit-content;
+  font-size: 30px;
+}
+.chat-box {
+  position: absolute;
+  top: -50px;
+  right: 50px;
+  /* background-color: #2563eb; */
+  background-color: #fff;
+  box-shadow: 0px 10px 15px 0px #0000000d;
+  padding: 15px;
+  width: 350px;
+  border-radius: 10px;
+}
+.chat-box .input {
+  width: 100%;
+  border: 1px solid #1969fe;
+  border-radius: 40px;
+}
+.chat-box input {
+  border-radius: 40px;
+  width: 100%;
+  box-sizing: border-box;
+
+  /* font-size: 16px; */
+  border: none;
+  outline: none;
+  height: 32px;
+  padding: 5px 10px;
 }
 </style>

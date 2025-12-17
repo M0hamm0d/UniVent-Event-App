@@ -131,54 +131,60 @@ function resetForm() {
     </RouterLink>
 
     <div class="create-event">
-      <div class="title">
-        <input v-model="eventData.title" type="text" placeholder="" />
-        <p>Event Title</p>
-      </div>
-
-      <div class="description">
-        <textarea v-model="eventData.description" rows="6" placeholder=" "></textarea>
-        <p>Description</p>
-      </div>
-
-      <div class="date-time">
-        <div class="date">
-          <input v-model="eventData.date" type="date" placeholder=" " />
+      <div class="basic-info">
+        <h1>Event Info</h1>
+        <div class="title">
+          <input v-model="eventData.title" type="text" placeholder="" />
+          <p>Event Title</p>
         </div>
-        <div class="time">
-          <input v-model="eventData.time" type="time" placeholder=" " />
-          <p>Time</p>
-          <!-- <div class="condition">* Use the format HH:MM AM/PM</div> -->
+
+        <div class="description">
+          <textarea v-model="eventData.description" rows="6" placeholder=" "></textarea>
+          <p>Description</p>
         </div>
-      </div>
-
-      <div class="location">
-        <input v-model="eventData.location" type="text" placeholder=" " />
-        <p>Location</p>
-      </div>
-
-      <div class="categories">
-        <p>Category</p>
-        <p>{{ selectedCategories }}</p>
-        <p>Pick up to 3</p>
-        <div class="categoryContainer">
-          <div v-for="(cat, i) in categoryOptions" :key="i" class="cat">
-            <label
-              :for="cat"
-              :class="{
-                disabled: selectedCategories.length >= 3 && !selectedCategories.includes(cat),
-              }"
-            >
-              {{ cat }}
-            </label>
-            <input
-              type="checkbox"
-              :id="cat"
-              :value="cat"
-              v-model="selectedCategories"
-              :disabled="selectedCategories.length >= 3 && !selectedCategories.includes(cat)"
-            />
+        <div class="categories">
+          <p>Category</p>
+          <div class="no-of-categories">
+            <p>{{ selectedCategories }}</p>
+            <p>Pick up to 3</p>
           </div>
+          <div class="categoryContainer">
+            <div v-for="(cat, i) in categoryOptions" :key="i" class="cat">
+              <input
+                type="checkbox"
+                :id="cat"
+                :value="cat"
+                v-model="selectedCategories"
+                :disabled="selectedCategories.length >= 3 && !selectedCategories.includes(cat)"
+              />
+              <label
+                :for="cat"
+                :class="{
+                  disabled: selectedCategories.length >= 3 && !selectedCategories.includes(cat),
+                }"
+              >
+                {{ cat }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="time-and-place">
+        <h1>Time and Place</h1>
+        <div class="date-time">
+          <div class="date">
+            <input v-model="eventData.date" type="date" placeholder=" " />
+          </div>
+          <div class="time">
+            <input v-model="eventData.time" type="time" placeholder=" " />
+            <p>Time</p>
+            <!-- <div class="condition">* Use the format HH:MM AM/PM</div> -->
+          </div>
+        </div>
+
+        <div class="location">
+          <input v-model="eventData.location" type="text" placeholder=" " />
+          <p>Location</p>
         </div>
       </div>
 
@@ -213,10 +219,10 @@ function resetForm() {
         </div>
       </div>
 
-      <div class="org-email">
+      <!-- <div class="org-email">
         <input v-model="eventData.email" type="text" placeholder=" " />
         <p>Organizer Email</p>
-      </div>
+      </div> -->
     </div>
 
     <div v-if="errorMessage" class="error">
@@ -233,6 +239,11 @@ function resetForm() {
 <style scoped>
 .categoryContainer {
   display: flex;
+  gap: 5px;
+}
+.categoryContainer .cat {
+  display: flex;
+  gap: 5px;
 }
 .error,
 .amount .condition,
@@ -288,6 +299,19 @@ img {
   gap: 15px;
   width: 100%;
   margin-top: 30px;
+}
+.no-of-categories {
+  display: flex;
+  gap: 10px;
+}
+.basic-info,
+.time-and-place {
+  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 2px solid #0a99fe;
+  border-radius: 10px;
 }
 textarea {
   outline: none;

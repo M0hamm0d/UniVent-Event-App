@@ -16,7 +16,7 @@ import SearchIcon from './components/icons/SearchIcon.vue'
 import BookmarkIcon from './components/icons/BookmarkIcon.vue'
 import RequestEvent from './components/icons/RequestEvent.vue'
 import { useRoute } from 'vue-router'
-import UniventAssistance from './components/UniventAssistance.vue'
+// import UniventAssistance from './components/UniventAssistance.vue'
 const route = useRoute()
 const { fetchProfile } = useUserProfile()
 let univentStore = useUniventStore()
@@ -202,7 +202,7 @@ onMounted(async () => {
       </div>
     </div>
     <div class="univent-assistance">
-      <UniventAssistance />
+      <!-- <UniventAssistance /> -->
     </div>
   </div>
 </template>
