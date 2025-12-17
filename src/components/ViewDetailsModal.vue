@@ -77,9 +77,9 @@ watch(is_interested, (newVal) => {
                 <span><CardIcon /></span>
                 <span>N{{ event.price }}</span>
               </div>
-              <div class="event-meta">
+              <div class="event-meta" v-if="event.link_to_register">
                 <span><RegisterIcon /></span>
-                <a href="">Click here to register</a>
+                <a :href="event.link_to_register">Click here to register</a>
               </div>
             </div>
           </div>
@@ -105,10 +105,6 @@ watch(is_interested, (newVal) => {
   </div>
 </template>
 <style scoped>
-/* .container {
-  display: flex;
-  flex-direction: column;
-} */
 .container {
   position: fixed;
   display: flex;

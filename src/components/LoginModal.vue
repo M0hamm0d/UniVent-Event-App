@@ -10,6 +10,8 @@ import router from '@/router'
 import CancelBtn from './icons/CancelBtn.vue'
 const emit = defineEmits(['closeBtn'])
 let toast = useToast()
+let passwordType = ref('password')
+// const passwordType = 'text'
 const error = ref('')
 const login = useUniventStore()
 const email = ref('')
@@ -17,6 +19,13 @@ const password = ref('')
 function openSignupModal() {
   login.loginModal = false
   login.signupModal = true
+}
+function togglePassword() {
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text'
+  } else {
+    passwordType.value = 'password'
+  }
 }
 const isLoading = ref(false)
 const { signIn } = useAuth(toast)
@@ -71,14 +80,15 @@ async function handleLogin() {
         <label for="email" placeholder="Enter your email address">Email</label>
         <input type="email" name="email" placeholder="Enter your email address" v-model="email" />
       </div>
-      <div class="input">
+      <div class="input password-input">
         <label for="password">Password</label>
         <input
-          type="password"
+          :type="passwordType"
           name="password"
           placeholder="Enter your password"
           v-model="password"
         />
+        <div class="open-close" @click="togglePassword"></div>
       </div>
       <p v-if="error" class="error">{{ error }}</p>
     </div>
@@ -175,6 +185,18 @@ h4 {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+.password-input {
+  position: relative;
+}
+.open-close {
+  width: 15px;
+  height: 15px;
+  background-color: #000;
+  position: absolute;
+  bottom: 12px;
+  right: 15px;
+  /* z-index: 100; */
 }
 .personal-info .input label {
   color: #2d2d2d;

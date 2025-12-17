@@ -208,84 +208,52 @@ onMounted(() => {
           </div>
           <ul class="categoryDropdown" v-if="univentStore.categoryDropdown" @click.stop>
             <li>
-              <label for="tech">Tech & Innovation</label
-              ><input
-                type="checkbox"
-                name="tech"
-                id="tech"
-                value="Tech"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Tech & Innovation</span>
+                <input type="checkbox" value="Tech" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="social">Social Gatherings</label
-              ><input
-                type="checkbox"
-                name="social"
-                id="social"
-                value="Social"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Social Gatherings</span>
+                <input type="checkbox" value="Social" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="academic">Academic Workshops</label
-              ><input
-                type="checkbox"
-                name="academic"
-                id="academic"
-                value="Academic"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Academic Workshops</span>
+                <input type="checkbox" value="Academic" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="sport">Sports Events</label
-              ><input
-                type="checkbox"
-                name="sport"
-                id="sport"
-                value="Sport"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Sports & Events</span>
+                <input type="checkbox" value="Sport" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="cultural">Cultural Activities</label
-              ><input
-                type="checkbox"
-                name="cultural"
-                id="cultural"
-                value="Cultural"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Cultural Activities</span>
+                <input type="checkbox" value="Cultural" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="tech">Clubs & Organizations</label
-              ><input
-                type="checkbox"
-                name="organization"
-                id="organization"
-                value="Organization"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Club & Organizations</span>
+                <input type="checkbox" value="Organization" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="career">Career Fairs</label
-              ><input
-                type="checkbox"
-                name="career"
-                id="career"
-                value="Career"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Career Fairs</span>
+                <input type="checkbox" value="Career" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="others">Others</label
-              ><input
-                type="checkbox"
-                name="others"
-                id="others"
-                value="Others"
-                v-model="filterObject.category"
-              />
+              <label class="checkbox-item">
+                <span>Others</span>
+                <input type="checkbox" value="Others" v-model="filterObject.category" />
+              </label>
             </li>
           </ul>
         </div>
@@ -317,54 +285,34 @@ onMounted(() => {
           </div>
           <ul v-if="univentStore.locationDropdown" @click.stop>
             <li>
-              <label for="main">Main Campus</label
-              ><input
-                type="checkbox"
-                name="main"
-                id="main"
-                value="main campus"
-                v-model="filterObject.location"
-              />
+              <label class="checkbox-item">
+                <span>Main Campus</span>
+                <input type="checkbox" value="main campus" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="auditorium">Auditorium</label
-              ><input
-                type="checkbox"
-                name="auditorium"
-                id="auditorium"
-                value="auditorium"
-                v-model="filterObject.location"
-              />
+              <label class="checkbox-item">
+                <span>Auditorium</span>
+                <input type="checkbox" value="auditorium" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="library">Library</label
-              ><input
-                type="checkbox"
-                name="library"
-                id="library"
-                value="library"
-                v-model="filterObject.location"
-              />
+              <label class="checkbox-item">
+                <span>Library</span>
+                <input type="checkbox" value="library" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="stadium">Stadium</label
-              ><input
-                type="checkbox"
-                name="stadium"
-                id="stadium"
-                value="stadium"
-                v-model="filterObject.location"
-              />
+              <label class="checkbox-item">
+                <span>Stadium</span>
+                <input type="checkbox" value="stadium" v-model="filterObject.category" />
+              </label>
             </li>
             <li>
-              <label for="others">Others</label
-              ><input
-                type="checkbox"
-                name="others"
-                id="others"
-                value="others"
-                v-model="filterObject.location"
-              />
+              <label class="checkbox-item">
+                <span>Others</span>
+                <input type="checkbox" value="others" v-model="filterObject.category" />
+              </label>
             </li>
           </ul>
         </div>
@@ -410,6 +358,15 @@ onMounted(() => {
   </div>
 </template>
 <style scoped>
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  cursor: pointer;
+}
+
 h2,
 p {
   margin: 0;

@@ -9,8 +9,8 @@ import SupportComponent from '@/components/SupportComponent.vue'
 const tabs = { account: AccountComponent, faq: FaqComponent, support: SupportComponent }
 import { ref } from 'vue'
 import SupportSetting from '@/components/icons/SupportSetting.vue'
-import PasswordIcon from '@/components/icons/PasswordIcon.vue'
-import LogoutIcon from '@/components/icons/LogoutIcon.vue'
+// import PasswordIcon from '@/components/icons/PasswordIcon.vue'
+// import LogoutIcon from '@/components/icons/LogoutIcon.vue'
 const active = ref('account')
 </script>
 <template>
@@ -42,20 +42,20 @@ const active = ref('account')
           </div>
           <div :class="['side-border', { active: active == 'support' }]"></div>
         </div>
-        <div class="nav-container" @click="active = 'password'">
+        <!-- <div class="nav-container" @click="active = 'password'">
           <div class="nav" :class="['nav', { activeNav: active == 'password' }]">
             <span><PasswordIcon :fill="active === 'password' ? '#000' : '#aaa'" /> </span>
             <span>Password</span>
           </div>
           <div :class="['side-border', { active: active == 'password' }]"></div>
-        </div>
-        <div class="nav-container" @click="active = 'logout'">
+        </div> -->
+        <!-- <div class="nav-container" @click="active = 'logout'">
           <div class="nav" :class="['nav', { activeNav: active == 'logout' }]">
             <span><LogoutIcon :fill="active === 'logout' ? '#000' : '#aaa'" /> </span>
             <span>Logout</span>
           </div>
           <div :class="['side-border', { active: active == 'logout' }]"></div>
-        </div>
+        </div> -->
       </div>
       <div class="tab-contents">
         <component :is="tabs[active]" />
