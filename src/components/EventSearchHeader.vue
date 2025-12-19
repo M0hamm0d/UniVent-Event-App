@@ -264,16 +264,19 @@ onMounted(() => {
             <span><DropdownIcon /></span>
           </div>
           <ul v-if="univentStore.dateDropdown" @click.stop>
-            <li @click="pickDateOrPrice('date', 'today')">
+            <li @click="pickDateOrPrice('date', 'today')" class="date">
               Today <span v-if="filterObject.date === 'today'">✓</span>
             </li>
-            <li @click="pickDateOrPrice('date', 'this week')">
+            <li @click="pickDateOrPrice('date', 'this week')" class="date">
               This Week <span v-if="filterObject.date === 'this week'">✓</span>
             </li>
-            <li @click="pickDateOrPrice('date', 'this month')">
+            <li @click="pickDateOrPrice('date', 'this month')" class="date">
               This Month <span v-if="filterObject.date === 'this month'">✓</span>
             </li>
-            <li>Choose a date <input type="date" v-model="date" @change="handleDateChange" /></li>
+            <li class="date">
+              Choose a date
+              <input type="date" v-model="date" @change="handleDateChange" />
+            </li>
             <!-- <li>Choose a date <input type="date" v-model="filterObject.date" /></li> -->
           </ul>
         </div>
@@ -335,14 +338,14 @@ onMounted(() => {
             <span><DropdownIcon /></span>
           </div>
           <ul v-if="univentStore.priceDropdown">
-            <li @click="pickDateOrPrice('price', 'below 2000')">
+            <li @click="pickDateOrPrice('price', 'below 2000')" class="prices">
               Below N2000 <span v-if="filterObject.price === 'below 2000'">✓</span>
             </li>
-            <li @click="pickDateOrPrice('price', 'between 2000 and 5000')">
+            <li @click="pickDateOrPrice('price', 'between 2000 and 5000')" class="prices">
               Between N2000 - N5000
-              <span v-if="filterObject.price === 'between 2000 and 5000'">✓</span>
+              <span v-if="filterObject.price === 'between 2000 and 5000'" class="prices">✓</span>
             </li>
-            <li @click="pickDateOrPrice('price', 'above 5000')">
+            <li @click="pickDateOrPrice('price', 'above 5000')" class="prices">
               Above N5000 <span v-if="filterObject.price === 'above 5000'">✓</span>
             </li>
           </ul>
@@ -365,8 +368,12 @@ onMounted(() => {
   gap: 12px;
   width: 100%;
   cursor: pointer;
+  padding: 12px 16px;
 }
-
+.prices,
+.date {
+  padding: 12px 16px;
+}
 h2,
 p {
   margin: 0;
@@ -551,7 +558,7 @@ ul {
   border-radius: 8px;
 }
 ul li {
-  padding: 12px 16px;
+  /* padding: 12px 16px; */
   border-radius: 8px;
   cursor: pointer;
   font-size: 15px;

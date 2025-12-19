@@ -6,7 +6,7 @@ export function useInterestedEvents(toast) {
   const active = ref('upcoming')
   const int = ref([])
   const loading = ref(false)
-  const perPage = ref(1)
+  const perPage = ref(6)
   // const filtersArray = ref({})
   async function fetchInterest(page = 1, filters = {}) {
     const from = (page - 1) * perPage.value //0*2, 1*2
