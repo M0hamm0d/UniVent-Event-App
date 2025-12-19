@@ -118,7 +118,7 @@ watch(
           @show-filter="showFilter"
         />
         <div class="skeleton" v-if="loading">
-          <SkeletonLoader />
+          <SkeletonLoader v-for="i in 3" :key="i" />
         </div>
       </div>
       <p>{{ filtersArray }}</p>
