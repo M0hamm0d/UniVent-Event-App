@@ -9,6 +9,7 @@ import CalendarIcon from './icons/CalendarIcon.vue'
 import ViewDetailsModal from './ViewDetailsModal.vue'
 import LocationIcon from './icons/LocationIcon.vue'
 import { useUniventStore } from '@/stores/counter'
+// import BellIcon from './icons/BellIcon.vue'
 
 const univentStore = useUniventStore()
 const route = useRoute()
@@ -20,7 +21,6 @@ const props = defineProps({
   id: String,
 })
 const emit = defineEmits(['deleteEvent'])
-
 const localEvents = ref([...props.events])
 const selectedEvent = ref(null)
 
@@ -66,6 +66,7 @@ watch(
 
 <template>
   <div class="event-card" v-for="(event, i) in localEvents" :key="i">
+    <!-- <div class="interest-btn"><BellIcon /></div> -->
     <div class="event-flier">
       <img :src="event.image_url" alt="" />
     </div>
@@ -142,6 +143,13 @@ h3 {
   flex-direction: column;
   gap: 16px;
   border: 1px solid #eaeaea;
+  position: relative;
+}
+.interest-btn {
+  position: absolute;
+  right: 25px;
+  top: 30px;
+  cursor: pointer;
 }
 .event-content {
   display: flex;

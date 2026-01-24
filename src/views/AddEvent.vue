@@ -14,7 +14,7 @@ const eventData = ref({
   time: '',
   location: '',
   categories: [],
-  email: '',
+  // email: '',
   imageUrl: '',
   price: '',
   isPaid: false,
@@ -55,7 +55,7 @@ async function handleFileUpload(e) {
 }
 
 async function handleSaveEvent() {
-  const requiredFields = ['title', 'description', 'date', 'time', 'location', 'email', 'imageUrl']
+  const requiredFields = ['title', 'description', 'date', 'time', 'location', 'imageUrl']
   const missing = requiredFields.filter((f) => !eventData.value[f])
   if (missing.length) {
     toast.error(`Missing: ${missing.join(', ')}`)
